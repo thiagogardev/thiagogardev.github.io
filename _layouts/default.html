@@ -61,7 +61,8 @@
     .brand .word { font-weight: 300; letter-spacing: -0.01em; font-size: 17px; line-height: 1; }
     .brand .word b { font-weight: 700; }
     .brand span small { display: block; font-weight: 400; color: var(--fg-soft); font-size: 12px; line-height: 1; margin-top: 3px; }
-    nav a { color: var(--fg-soft); margin-left: 18px; font-size: 15px; }
+    nav { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px 18px; }
+    nav a { color: var(--fg-soft); font-size: 15px; white-space: nowrap; }
     nav a:hover { color: var(--fg); text-decoration: none; }
     nav a.lang { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; color: var(--fg); }
     nav a.lang:hover { background: var(--bg-soft); }
@@ -99,7 +100,8 @@
 
     @media (max-width: 600px) {
       body { font-size: 16px; }
-      nav a { margin-left: 10px; font-size: 13px; }
+      nav { gap: 4px 12px; }
+      nav a { font-size: 13px; }
       .brand { font-size: 15px; }
       .brand span small { display: none; }
     }
