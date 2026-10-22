@@ -1,4 +1,4 @@
-# Thiago Garofalo · Engenharia de software e IA aplicada à indústria
+# Engenharia de software e IA aplicada à indústria
 
 Diretor executivo de empresas industriais (fabricação de engates rápidos e acoplamentos, importação de suprimentos para mineração) e engenheiro de produção. Pós-graduando em **Sistemas Cognitivos com Agentes de IA**.
 
