@@ -1,9 +1,14 @@
 <!doctype html>
-<html lang="pt-BR">
+{% assign en = false %}{% if page.lang == "en" %}{% assign en = true %}{% endif %}
+{% if en %}{% assign pt_url = page.url | remove_first: "/en" %}{% assign en_url = page.url %}{% else %}{% assign pt_url = page.url %}{% assign en_url = page.url | prepend: "/en" %}{% endif %}
+<html lang="{% if en %}en{% else %}pt-BR{% endif %}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% seo %}
+  <link rel="alternate" hreflang="pt-BR" href="{{ pt_url | absolute_url }}">
+  <link rel="alternate" hreflang="en" href="{{ en_url | absolute_url }}">
+  <link rel="alternate" hreflang="x-default" href="{{ pt_url | absolute_url }}">
   <link rel="icon" href="{{ '/favicon.svg' | relative_url }}" type="image/svg+xml">
   <style>
     :root {
@@ -55,6 +60,8 @@
     .brand span small { display: block; font-weight: 400; color: var(--fg-soft); font-size: 12px; line-height: 1; margin-top: 3px; }
     nav a { color: var(--fg-soft); margin-left: 18px; font-size: 15px; }
     nav a:hover { color: var(--fg); text-decoration: none; }
+    nav a.lang { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; color: var(--fg); }
+    nav a.lang:hover { background: var(--bg-soft); }
 
     main { max-width: var(--max); margin: 0 auto; padding: 40px 20px 80px; }
 
@@ -98,14 +105,22 @@
 <body>
   <header class="site">
     <div class="wrap">
-      <a class="brand" href="{{ '/' | relative_url }}">
+      <a class="brand" href="{% if en %}{{ '/en/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">
         <img src="{{ '/assets/logo.svg' | relative_url }}" alt="">
         <span>Thiago Garofalo<small>garofalodeveloper.com</small></span>
       </a>
       <nav>
+        {% if en %}
+        <a href="{{ '/en/#projects' | relative_url }}">Projects</a>
+        <a href="{{ '/en/cases/genesis.html' | relative_url }}">Genesis case</a>
+        <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
+        <a class="lang" href="{{ pt_url | relative_url }}" hreflang="pt-BR" title="Versão em português">PT</a>
+        {% else %}
         <a href="{{ '/#projetos' | relative_url }}">Projetos</a>
         <a href="{{ '/cases/genesis.html' | relative_url }}">Case Genesis</a>
         <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
+        <a class="lang" href="{{ en_url | relative_url }}" hreflang="en" title="English version">EN</a>
+        {% endif %}
       </nav>
     </div>
   </header>
@@ -117,7 +132,11 @@
   <footer class="site">
     <div class="wrap">
       <span>© {{ site.time | date: "%Y" }} Thiago Garofalo</span>
+      {% if en %}
+      <span>Static site published from the <a href="https://github.com/thiagogardev/thiagogardev.github.io">thiagogardev.github.io</a> repository</span>
+      {% else %}
       <span>Site estático publicado a partir do repositório <a href="https://github.com/thiagogardev/thiagogardev.github.io">thiagogardev.github.io</a></span>
+      {% endif %}
     </div>
   </footer>
 
