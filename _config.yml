@@ -1,0 +1,37 @@
+title: Thiago Garofalo
+tagline: Engenharia de software e IA aplicada à indústria
+description: Portfólio técnico de Thiago Garofalo. Agentes de IA para prospecção B2B, ERP próprio, sites e infraestrutura self-hosted, construídos para rodar as próprias empresas.
+lang: pt-BR
+url: https://garofalodeveloper.com
+author: Thiago Garofalo
+twitter: null
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    disable: true
+
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-relative-links
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+readme_index:
+  with_frontmatter: true
+
+relative_links:
+  enabled: true
+  collections: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - .gitignore
+  - docs/

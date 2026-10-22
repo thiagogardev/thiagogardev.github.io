@@ -129,7 +129,7 @@ Duas escolhas de projeto são deliberadas:
 - **Cada API pública tem regra escondida.** O PNCP recusa janelas de data maiores que um ano (HTTP 422) e devolve 204 para período vazio; o coletor fatia por ano e trata o vazio como normal.
 - **Dado curado vale mais que volume.** 25 mineradoras com portal verificado geraram mais ação útil que 35 mil empresas sem canal. A métrica que importa é "leads acionáveis", não "leads".
 - **Grandes obras não aparecem onde se espera.** Os consórcios das linhas do Metrô foram licitados antes de 2025 ou por outra via e não estão no PNCP do órgão. Entram por seed curado, com a obra ligada à construtora membro.
-- **Operação faz parte do sistema.** Depois de um ransomware que criptografou os servidores físicos da empresa em setembro de 2026, este projeto e os demais passaram a ter backup com retenção imutável (Object Lock) e runbook de restauração testado. Um agente em produção que não volta de um desastre não é um agente em produção.
+- **Operação faz parte do sistema.** Depois de um incidente de segurança que inutilizou os servidores físicos da empresa em setembro de 2026, este projeto e os demais passaram a ter backup com retenção imutável (Object Lock) e runbook de restauração testado. Um agente em produção que não volta de um desastre não é um agente em produção.
 
 ## 7. Próximos passos e plano de avaliação
 
