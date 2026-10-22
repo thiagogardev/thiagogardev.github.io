@@ -50,7 +50,8 @@
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
     .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; }
-    .brand img { width: 30px; height: 30px; border-radius: 7px; }
+    .brand img { width: 30px; height: 30px; border-radius: 7px; flex: none; }
+    .brand span { white-space: nowrap; }
     .brand span small { display: block; font-weight: 400; color: var(--fg-soft); font-size: 12px; line-height: 1; margin-top: 3px; }
     nav a { color: var(--fg-soft); margin-left: 18px; font-size: 15px; }
     nav a:hover { color: var(--fg); text-decoration: none; }
@@ -88,7 +89,8 @@
 
     @media (max-width: 600px) {
       body { font-size: 16px; }
-      nav a { margin-left: 12px; font-size: 14px; }
+      nav a { margin-left: 10px; font-size: 13px; }
+      .brand { font-size: 15px; }
       .brand span small { display: none; }
     }
   </style>
