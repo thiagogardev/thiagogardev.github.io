@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Garofalo Developer">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="garofalodeveloper">
   <rect width="64" height="64" rx="14" fill="#0f172a"/>
-  <text x="14" y="44" font-family="ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace" font-size="34" font-weight="700" fill="#f8fafc">G</text>
-  <rect x="40" y="38" width="12" height="4" rx="1" fill="#38bdf8"/>
+  <g transform="translate(32 32) scale(0.82) translate(-32 -32)">
+    <path d="M44.9,16.7 A20,20 0 1 0 50.8,38.8" fill="none" stroke="#f8fafc" stroke-width="8" stroke-linecap="round"/>
+    <path d="M33,38.8 H51" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+  </g>
 </svg>

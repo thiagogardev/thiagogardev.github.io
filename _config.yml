@@ -4,6 +4,7 @@ description: Portfólio técnico de Thiago Garofalo. Agentes de IA para prospec�
 lang: pt-BR
 url: https://garofalodeveloper.com
 author: Thiago Garofalo
+logo: /assets/logo-512.png
 twitter: null
 
 markdown: kramdown
@@ -31,6 +32,7 @@ defaults:
       path: ""
     values:
       layout: default
+      image: /assets/logo-512.png
 
 exclude:
   - .gitignore

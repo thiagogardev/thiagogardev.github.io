@@ -10,6 +10,7 @@
   <link rel="alternate" hreflang="en" href="{{ en_url | absolute_url }}">
   <link rel="alternate" hreflang="x-default" href="{{ pt_url | absolute_url }}">
   <link rel="icon" href="{{ '/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ '/assets/logo-180.png' | relative_url }}">
   <style>
     :root {
       --bg: #ffffff;
@@ -55,8 +56,10 @@
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
     .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; }
-    .brand img { width: 30px; height: 30px; border-radius: 7px; flex: none; }
+    .brand svg { width: 30px; height: 30px; flex: none; }
     .brand span { white-space: nowrap; }
+    .brand .word { font-weight: 300; letter-spacing: -0.01em; font-size: 17px; line-height: 1; }
+    .brand .word b { font-weight: 700; }
     .brand span small { display: block; font-weight: 400; color: var(--fg-soft); font-size: 12px; line-height: 1; margin-top: 3px; }
     nav a { color: var(--fg-soft); margin-left: 18px; font-size: 15px; }
     nav a:hover { color: var(--fg); text-decoration: none; }
@@ -106,8 +109,8 @@
   <header class="site">
     <div class="wrap">
       <a class="brand" href="{% if en %}{{ '/en/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">
-        <img src="{{ '/assets/logo.svg' | relative_url }}" alt="">
-        <span>Thiago Garofalo<small>garofalodeveloper.com</small></span>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M44.9,16.7 A20,20 0 1 0 50.8,38.8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/><path d="M33,38.8 H51" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/></svg>
+        <span><span class="word"><b>garofalo</b>developer</span><small>Thiago Garofalo</small></span>
       </a>
       <nav>
         {% if en %}
