@@ -131,31 +131,47 @@ Duas escolhas de projeto são deliberadas:
 - **Grandes obras não aparecem onde se espera.** Os consórcios das linhas do Metrô foram licitados antes de 2025 ou por outra via e não estão no PNCP do órgão. Entram por seed curado, com a obra ligada à construtora membro.
 - **Operação faz parte do sistema.** Depois de um incidente de segurança que inutilizou os servidores físicos da empresa em setembro de 2026, este projeto e os demais passaram a ter backup com retenção imutável (Object Lock) e runbook de restauração testado. Um agente em produção que não volta de um desastre não é um agente em produção.
 
-## 7. Próximos passos e plano de avaliação
+## 7. Plano de avaliação e próximos passos
 
-A camada cognitiva planejada (Fase 4 do backlog) é onde o projeto encontra a pós-graduação. A proposta é tratar cada adição como um experimento com métrica definida antes de codar.
+A camada cognitiva planejada (Fase 4 do backlog) é onde o projeto encontra a pós-graduação. A pergunta central é uma só: **a introdução do LLM melhora, de forma mensurável, o sistema baseado só em regras?** Cada adição é tratada como experimento com métrica definida antes de codar. As métricas abaixo seguem a orientação recebida na pós em outubro de 2026.
 
-### Camadas a adicionar
+### Métrica principal: Precision@K
 
-1. **Personalização da mensagem por LLM local** (Ollama, Llama 3.1 ou Qwen 2.5). O playbook hoje é um template por canal. O LLM recebe empresa, substância ou obra, UF e canal, e gera a mensagem. Avaliação: taxa de resposta por mensagem gerada contra template, em teste A/B por semana.
-2. **RAG sobre documentos do nicho** (pgvector, nomic-embed-text, 768 dimensões). Editais, normas de homologação de fornecedores, páginas de portal. Objetivo: o agente responder "o que esta empresa exige para homologar" a partir de fonte citada.
-3. **Qualificação do lead por LLM** em paralelo ao ranking determinístico. Mesmos candidatos, duas listas. Avaliação: concordância entre as listas e, no desfecho do funil, qual lista acertou mais quem virou cotação.
-4. **Malha fechada de aprendizado.** O desfecho do funil (cadastrado, aprovado, cotação, descartado) realimenta os pesos do ranking. Começa com ajuste manual mensal e evolui para ajuste automático.
+Proporção de leads realmente qualificados entre os K primeiros recomendados pelo agente. No Genesis, K é o tamanho do lote diário de missões (K = 5), então a métrica é **Precision@5 por semana**, calculada por origem do ranking (regras ou LLM).
 
-### Métricas que passam a ser coletadas
+"Realmente qualificado" é medido em duas camadas, para ter número cedo e confirmação depois:
+
+1. **Julgamento humano na missão.** Ao abrir a missão, o usuário marca "fazia sentido" ou "não fazia sentido". Dá a Precision@5 da semana em que o lote foi gerado.
+2. **Desfecho no funil em 30 dias.** A empresa chegou a cadastrado, aprovado, cotação ou cliente. Confirma, com atraso, se o julgamento humano estava certo.
+
+Missões sem avaliação contam como não qualificadas na versão estrita e são excluídas na versão "entre avaliadas"; as duas são reportadas.
+
+### Métricas secundárias
 
 | Métrica | Como medir | Por que importa |
 |---|---|---|
-| Precisão da priorização | % das missões do dia que avançam no funil em 30 dias | Mede se o raciocínio escolhe bem |
-| Taxa de resposta por canal | respostas / contatos, por tipo de canal | Define onde o agente deve concentrar esforço |
-| Conversão por etapa | novo, contatado, cadastrado, cotação, cliente | Funil completo, por instância |
-| Custo por lead acionável | horas humanas + infra / leads com canal verificado | Compara com prospecção manual |
-| Tempo humano por missão | estimado vs. real, registrado na conclusão | Mede o ganho operacional de verdade |
-| Concordância regra vs. LLM | sobreposição das listas e acerto no desfecho | Decide se o LLM entra no ranking ou só na mensagem |
+| Taxa de conversão comercial | empresas que avançam no funil / empresas acionadas, por origem e por canal | Liga a priorização ao resultado de negócio |
+| Custo computacional | tokens por missão e custo de infraestrutura por lote, por origem | Regras custam zero; o LLM precisa pagar o que acrescenta |
+| Latência | tempo de geração do lote e por missão, por origem | O lote roda à noite, mas a geração sob demanda é interativa |
+| Explicabilidade | cada missão guarda o motivo da escolha; o usuário avalia se o motivo ajudou | O ranking por regras é legível por construção; o LLM precisa provar que também é |
+
+### Protocolo da comparação
+
+- **Mesmos candidatos, dois rankings.** A cada lote, o conjunto de empresas elegíveis é o mesmo; regras e LLM produzem suas listas de K.
+- **Alternância por semana** (ou intercalação dentro do lote, com a origem oculta do usuário no momento da avaliação) para evitar viés de posição e de novidade.
+- **Instrumentação por missão**, implementada em outubro de 2026: origem (regras ou LLM), posição no ranking, lote, motivo, score, tempo de geração, tokens, avaliação humana e data da avaliação. Um script calcula Precision@5 por semana e por origem, com as versões estrita e entre avaliadas, além da precisão por desfecho em 30 dias.
+- **Linha de base primeiro.** O sistema de regras passa a ser medido antes de o LLM entrar, para a comparação ter histórico.
+
+### Camadas a adicionar
+
+1. **Qualificação do lead por LLM** em paralelo ao ranking determinístico (Ollama, Llama 3.1 ou Qwen 2.5). É a camada que a comparação acima avalia.
+2. **Personalização da mensagem por LLM.** O playbook hoje é um template por canal. Avaliação: taxa de resposta por mensagem gerada contra template, em teste A/B por semana.
+3. **RAG sobre documentos do nicho** (pgvector, nomic-embed-text, 768 dimensões). Editais, normas de homologação de fornecedores, páginas de portal. Objetivo: responder "o que esta empresa exige para homologar" a partir de fonte citada.
+4. **Malha fechada de aprendizado.** O desfecho do funil realimenta os pesos do ranking, primeiro com ajuste manual mensal, depois automático.
 
 ### Possíveis recortes para trabalho acadêmico
 
-- Agente híbrido (regras explicáveis + LLM) para priorização de leads B2B: comparação controlada em produção.
+- Agente híbrido (regras explicáveis + LLM) para priorização de leads B2B: comparação controlada em produção, com Precision@K como métrica principal.
 - Arquitetura de agente com humano no circuito para decisões de alto custo de erro: quando o agente deve parar.
 - Percepção a partir de dados públicos brasileiros fragmentados: integração ANM, Receita, PNCP e ComexStat como ambiente do agente.
 

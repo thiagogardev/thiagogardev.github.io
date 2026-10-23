@@ -137,31 +137,47 @@ Two design choices are deliberate:
 - **Large works do not show up where expected.** The consortia of the Metro lines were tendered before 2025 or through another route and are not in the agency's PNCP records. They enter through a curated seed, with the work linked to the member contractor.
 - **Operations are part of the system.** After a security incident that destroyed the company's physical servers in September 2026, this project and the others gained backups with immutable retention (Object Lock) and a tested restore runbook. An agent in production that does not come back from a disaster is not an agent in production.
 
-## 7. Next steps and evaluation plan
+## 7. Evaluation plan and next steps
 
-The planned cognitive layer (Phase 4 of the backlog) is where the project meets the graduate program. The proposal is to treat every addition as an experiment with a metric defined before coding.
+The planned cognitive layer (Phase 4 of the backlog) is where the project meets the graduate program. There is one central question: **does introducing the LLM measurably improve the rules-only system?** Every addition is treated as an experiment with a metric defined before coding. The metrics below follow the guidance received in the program in October 2026.
 
-### Layers to add
+### Main metric: Precision@K
 
-1. **Message personalization with a local LLM** (Ollama, Llama 3.1 or Qwen 2.5). Today the playbook is a template per channel. The LLM receives company, substance or work, state and channel, and generates the message. Evaluation: reply rate for generated messages against templates, in weekly A/B tests.
-2. **RAG over niche documents** (pgvector, nomic-embed-text, 768 dimensions). Tender notices, supplier qualification rules, portal pages. Goal: the agent answers "what does this company require to qualify a supplier" from a cited source.
-3. **Lead qualification by LLM** alongside the deterministic ranking. Same candidates, two lists. Evaluation: agreement between the lists and, at the funnel outcome, which list got more of the companies that reached quotation.
-4. **Closed learning loop.** The funnel outcome (registered, approved, quoting, discarded) feeds back into the ranking weights. It starts with a monthly manual adjustment and evolves into automatic adjustment.
+The share of truly qualified leads among the top K recommended by the agent. In Genesis, K is the size of the daily mission batch (K = 5), so the metric is **weekly Precision@5**, computed per ranking origin (rules or LLM).
 
-### Metrics to start collecting
+"Truly qualified" is measured in two layers, to get a number early and a confirmation later:
+
+1. **Human judgment at the mission.** When opening the mission, the user marks "made sense" or "did not make sense". This gives the Precision@5 of the week the batch was generated.
+2. **Funnel outcome within 30 days.** The company reached registered, approved, quoting or customer. It confirms, with a delay, whether the human judgment was right.
+
+Missions without an evaluation count as not qualified in the strict version and are excluded in the "among evaluated" version; both are reported.
+
+### Secondary metrics
 
 | Metric | How to measure | Why it matters |
 |---|---|---|
-| Prioritization precision | % of the day's missions that advance in the funnel within 30 days | Measures whether the reasoning chooses well |
-| Reply rate per channel | replies / contacts, by channel type | Defines where the agent should concentrate effort |
-| Conversion per stage | new, contacted, registered, quoting, customer | Full funnel, per instance |
-| Cost per actionable lead | human hours + infrastructure / leads with a verified channel | Compares against manual prospecting |
-| Human time per mission | estimated vs. actual, recorded at completion | Measures the real operational gain |
-| Rules vs. LLM agreement | overlap of the lists and accuracy at the outcome | Decides whether the LLM joins the ranking or only the message |
+| Commercial conversion rate | companies that advance in the funnel / companies approached, per origin and per channel | Ties prioritization to the business result |
+| Computational cost | tokens per mission and infrastructure cost per batch, per origin | Rules cost nothing; the LLM has to pay for what it adds |
+| Latency | batch generation time and time per mission, per origin | The batch runs overnight, but on-demand generation is interactive |
+| Explainability | every mission stores the reason for the choice; the user rates whether the reason helped | The rules ranking is readable by construction; the LLM has to prove it is too |
+
+### Comparison protocol
+
+- **Same candidates, two rankings.** For each batch the set of eligible companies is the same; rules and LLM each produce their top K.
+- **Weekly alternation** (or interleaving within the batch, with the origin hidden from the user at evaluation time) to avoid position and novelty bias.
+- **Per-mission instrumentation**, implemented in October 2026: origin (rules or LLM), rank position, batch, reason, score, generation time, tokens, human evaluation and evaluation date. A script computes weekly Precision@5 per origin, in the strict and among-evaluated versions, plus the precision by 30-day outcome.
+- **Baseline first.** The rules system is measured before the LLM comes in, so the comparison has history.
+
+### Layers to add
+
+1. **Lead qualification by LLM** alongside the deterministic ranking (Ollama, Llama 3.1 or Qwen 2.5). This is the layer the comparison above evaluates.
+2. **Message personalization with an LLM.** Today the playbook is a template per channel. Evaluation: reply rate for generated messages against templates, in weekly A/B tests.
+3. **RAG over niche documents** (pgvector, nomic-embed-text, 768 dimensions). Tender notices, supplier qualification rules, portal pages. Goal: answer "what does this company require to qualify a supplier" from a cited source.
+4. **Closed learning loop.** The funnel outcome feeds back into the ranking weights, first with a monthly manual adjustment, then automatically.
 
 ### Possible angles for academic work
 
-- Hybrid agent (explainable rules + LLM) for B2B lead prioritization: a controlled comparison in production.
+- Hybrid agent (explainable rules + LLM) for B2B lead prioritization: a controlled comparison in production, with Precision@K as the main metric.
 - Human-in-the-loop agent architecture for decisions with a high cost of error: when the agent must stop.
 - Perception from fragmented Brazilian public data: integrating ANM, the federal registry, PNCP and ComexStat as the agent's environment.
 
