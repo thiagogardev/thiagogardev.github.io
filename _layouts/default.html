@@ -96,6 +96,17 @@
     .mermaid { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 16px 0; }
     .mermaid svg { max-width: 100%; height: auto; }
 
+    /* Ilustração da página inicial: chave em malha de nós, recolorida pela paleta (segue o tema). */
+    .art { float: right; width: 300px; max-width: 42%; margin: 4px 0 16px 32px; }
+    .chave { width: 100%; height: auto; display: block; }
+    .chave .cls-10 { fill: var(--accent); }
+    .chave .cls-15 { fill: var(--line); }
+    .chave .cls-16 { fill: var(--fg-soft); opacity: .35; }
+    .chave [class^="cls-"]:not(.cls-10):not(.cls-15):not(.cls-16) { fill: var(--bg-soft); }
+    @media (max-width: 640px) {
+      .art { float: none; width: 220px; max-width: 70%; margin: 0 auto 20px; }
+    }
+
     footer.site { border-top: 1px solid var(--line); color: var(--fg-soft); font-size: 14px; }
     footer.site .wrap { max-width: var(--max); margin: 0 auto; padding: 24px 20px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
@@ -132,6 +143,7 @@
   </header>
 
   <main>
+    {% if page.url == "/" or page.url == "/en/" %}<div class="art">{% include chave.svg %}</div>{% endif %}
     {{ content }}
   </main>
 
