@@ -35,4 +35,4 @@ Cada case segue o mesmo modelo ([cases/modelo-de-case.md](cases/modelo-de-case.m
 
 ## Contato
 
-Site: [garofalodeveloper.com](https://garofalodeveloper.com) · GitHub: [@thiagogardev](https://github.com/thiagogardev)
+Site: [garofalodeveloper.com](https://garofalodeveloper.com) · GitHub: [@thiagogardev](https://github.com/thiagogardev) · LinkedIn: [thiago-garofalo](https://www.linkedin.com/in/thiago-garofalo-792a2653/)

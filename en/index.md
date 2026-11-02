@@ -41,4 +41,4 @@ Every case follows the same template: problem, result, architecture, decisions, 
 
 ## Contact
 
-Site: [garofalodeveloper.com](https://garofalodeveloper.com) · GitHub: [@thiagogardev](https://github.com/thiagogardev)
+Site: [garofalodeveloper.com](https://garofalodeveloper.com) · GitHub: [@thiagogardev](https://github.com/thiagogardev) · LinkedIn: [thiago-garofalo](https://www.linkedin.com/in/thiago-garofalo-792a2653/)
