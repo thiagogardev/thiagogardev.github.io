@@ -5,9 +5,9 @@ description: Case do Escrituro, sistema para escritórios de contabilidade const
 
 # Escrituro: do mercado ao produto no ar em dois dias
 
-**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código, verificação e publicação · **Estado:** Fase 0 no ar, em evolução
+**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código, verificação e publicação · **Estado:** Fase 0 no ar; Fase 1 em construção, módulo Contábil publicado
 
-> Resumo em uma frase: em dois dias de trabalho, saí de uma pergunta ("dá para construir um sistema para escritórios de contabilidade igual ou melhor que o Contmatic Phoenix?") para um produto com nome, domínio registrado, pesquisa de mercado com 659 fontes datadas, definição de produto revisada por um agente independente e a primeira fase do sistema funcionando em produção, com domínio, certificado e backup.
+> Resumo em uma frase: em dois dias de trabalho, saí de uma pergunta ("dá para construir um sistema para escritórios de contabilidade igual ou melhor que o Contmatic Phoenix?") para um produto com nome, domínio registrado, pesquisa de mercado com 659 fontes datadas, definição de produto revisada por um agente independente e a primeira fase do sistema funcionando em produção, com domínio, certificado e backup. No mesmo dia, o módulo Contábil da Fase 1 entrou no ar, construído sobre um inventário de 233 funções dos sistemas líderes.
 
 ## 1. Contexto e problema
 
@@ -118,7 +118,43 @@ A definição mapeou 31 normas e leiautes como requisitos de software, com vers�
 | IN RFB 1.751/2017 (procuração e-CAC) | Procuração com prazo, exigida para transmitir pelo escritório | Procurações por empresa com data de fim e alerta 30 dias antes |
 | LGPD arts. 37 e 46 | Registro das operações e segurança | Auditoria campo a campo, acessos por empresa, certificado e segredo de 2FA cifrados |
 
-## 6. Números
+## 6. Fase 1, módulo Contábil: o piso do mercado e as lacunas que ninguém entrega
+
+Com a Fase 0 no ar, a pergunta seguinte foi o que um módulo precisa ter para um contador considerá-lo completo. Em vez de adivinhar, uma segunda pesquisa, em seis frentes paralelas, inventariou função a função o que Contmatic, Domínio, Alterdata, Fortes, Questor, SCI, Makro e IOB documentam em público: 233 funções, classificadas em piso (quatro ou mais fornecedores), diferencial (um a três) e lacuna (ninguém). A Folhamatic, citada como referência, não existe mais: virou IOB Online Sistemas em 2020. O módulo Contábil foi construído a partir dessa lista, com o piso inteiro e as lacunas que cabem na fase.
+
+O método mudou de escala: o núcleo (esquema de dez tabelas, funções puras de plano, partida dobrada, balancete, DRE, balanço e encerramento, leitor de OFX, regras de conciliação e 64 verificações novas) ficou comigo e com um agente; as 23 telas foram divididas entre quatro agentes em paralelo, cada um dono de uma pasta, sem tocar nos arquivos dos outros. A integração, os menus, a ajuda e a verificação ponta a ponta no navegador, com Playwright digitando o lançamento e importando o extrato, fecharam o ciclo.
+
+| Piso do mercado | Como está no Escrituro |
+|---|---|
+| Plano de contas modelo com referencial da RFB, plano por empresa, código reduzido, natureza por conta | Modelo ITG 1000 com 182 contas em quatro níveis, copiado para cada empresa na primeira abertura; referencial da RFB preenchido na Fase 2 com a tabela oficial, nunca inventado |
+| Lançamento com várias partidas, históricos padrão com variáveis, centros de custo, lotes, saldos iniciais | Partidas ilimitadas, Ctrl+M acrescenta linha, Ctrl+Enter ou F5 abre a consulta de conta, débitos e créditos precisam fechar na tela |
+| Importação de OFX e conciliação por data, valor e histórico | Leitor OFX sem dependências; sugestão por lançamento existente de mesmo valor em até três dias ou por regra; o analista aprova, o sistema não grava sozinho |
+| Balancete, razão, diário, DRE, balanço, apuração e zeramento | Todos em vídeo e impressão; encerramento mostra a simulação antes de gravar |
+| Fechamento por competência com bloqueio | Competência fechada bloqueia gravar, excluir e restaurar |
+
+| Lacuna que nenhum fornecedor documenta | Resposta no Escrituro |
+|---|---|
+| Numeração sequencial por livro conforme a ITG 2000 e estorno vinculado | Número por empresa que nunca se repete; estorno gera lançamento novo ligado ao original nos dois sentidos |
+| Reabertura de período com motivo e trilha | Reabrir exige motivo e fica na auditoria, campo a campo |
+| Lixeira com restauração | Excluir manda para a lixeira com motivo; restaurar devolve com o mesmo número |
+| Regras de conciliação aprendidas das conciliações manuais | A regra nasce da conciliação feita pelo analista, por trecho do histórico, e vale para a empresa ou para todas |
+| Painel de consistências antes da ECD | Saldos invertidos, lançamentos sem histórico, contas sem referencial, sem movimento, competências abertas e lixeira, num painel só |
+
+### Telas do módulo Contábil
+
+![Lançamento contábil com duas partidas, seletor de conta e totais fechando](../assets/escrituro/lancamento.png)
+
+*Lançamento contábil. A conta é digitada pelo código reduzido ou escolhida na consulta; a diferença entre débitos e créditos aparece até fechar, e Gravar só libera quando fecha.*
+
+![Conciliação bancária com as seis linhas do extrato OFX de exemplo e as sugestões de lançamento](../assets/escrituro/conciliacao.png)
+
+*Conciliação bancária. Cada linha do extrato traz a sugestão: um lançamento já digitado de mesmo valor ou a regra aprendida; o analista concilia, gera o lançamento ou ignora com motivo.*
+
+![Balancete de verificação de outubro de 2026 com saldo anterior, débitos, créditos e saldo final](../assets/escrituro/balancete.png)
+
+*Balancete de verificação. Sintéticas em negrito somam as analíticas pelo código; o saldo anterior inclui a implantação de saldos; débitos e créditos do período fecham.*
+
+## 7. Números
 
 Tudo entre 4 e 5 de novembro de 2026, da primeira pergunta à publicação.
 
@@ -139,9 +175,21 @@ Tudo entre 4 e 5 de novembro de 2026, da primeira pergunta à publicação.
 | Nomes candidatos checados no Registro.br | 10 |
 | Tempo da decisão de publicar ao sistema respondendo na VPS | cerca de 30 minutos |
 
-O que não está feito, dito com a mesma clareza: a restauração do backup em produção ainda não foi testada, o pedido de marca no INPI não foi protocolado, o certificado A1 só foi testado sem arquivo real, os prazos de EFD ICMS/IPI e ISS usam os de São Paulo e o catálogo não tem declarações estaduais.
+Depois do módulo Contábil, no mesmo 5 de novembro:
 
-## 7. Lições
+| Medida | Valor |
+|---|---|
+| Funções inventariadas nos sistemas líderes | 233 (103 piso, 97 diferenciais, 33 lacunas), 518 citações |
+| Contas no plano modelo | 182, 132 analíticas |
+| Tabelas no banco | 30 |
+| Telas e rotas | 60, das quais 23 do contábil |
+| Linhas de TypeScript | 14.460 |
+| Asserções automatizadas | 212, em 5 suítes |
+| Agentes construindo telas em paralelo | 4 |
+
+O que não está feito, dito com a mesma clareza: a restauração do backup em produção ainda não foi testada, o pedido de marca no INPI não foi protocolado, o certificado A1 só foi testado sem arquivo real, os prazos de EFD ICMS/IPI e ISS usam os de São Paulo, o catálogo não tem declarações estaduais, o referencial da RFB está em branco e, da Fase 1, faltam a captura de documentos fiscais, o PGDAS-D pelo Integra Contador, honorários e portal.
+
+## 8. Lições
 
 - **Medir vale mais que descrever.** O agente do padrão visual leu as cores das capturas do Phoenix pixel a pixel. Os tokens saíram exatos, e a primeira tela já parecia o original em vez de "inspirada" nele.
 - **Revisão independente antes do código.** Trinta e um pontos corrigidos numa definição de 11 mil palavras, por um agente que não a escreveu. É barato comparado a descobrir no código que a cota de IA custaria mais que a mensalidade.
@@ -149,21 +197,21 @@ O que não está feito, dito com a mesma clareza: a restauração do backup em p
 - **Dia útil é regra de negócio.** PGDAS-D posterga, FGTS Digital antecipa, e feriado bancário conta. O motor de prazos é função pura, testada contra o calendário real de 2026.
 - **O domínio certo é o .com.br.** O escrituro.com estava com um especulador desde abril. Para um produto brasileiro, o .com.br registrado direto no Registro.br resolve, depois de desfazer o vínculo do CPF com o provedor anterior.
 
-## 8. Próximos passos
+## 9. Próximos passos
 
 Seis fases, cada uma com critério de pronto verificável e sem datas prometidas. Cada fase só começa com a anterior em uso real.
 
 1. **Fase 0, fundação (no ar).** Falta testar a restauração do backup em produção, protocolar a marca e validar as cinco telas com contadores. Portão: escritório de demonstração com as empresas do grupo, agenda gerada por regime e um analista marcando obrigações com recibo em produção.
-2. **Fase 1, MVP contábil e fiscal do Simples.** Plano de contas com referencial, lançamentos, conciliação, balancete e fechamento, reaproveitando o controle gerencial do grupo; captura de NF-e e CT-e por NSU com manifestação; NFS-e nacional; PGDAS-D, DAS e DEFIS pelo Integra Contador; apuração informativa de IBS e CBS; honorários e portal do cliente. Portão: um mês inteiro das empresas do grupo escriturado no sistema e um escritório externo pequeno em piloto.
+2. **Fase 1, MVP contábil e fiscal do Simples (módulo Contábil publicado).** Plano de contas com referencial, lançamentos, conciliação, balancete e fechamento, reaproveitando o controle gerencial do grupo; captura de NF-e e CT-e por NSU com manifestação; NFS-e nacional; PGDAS-D, DAS e DEFIS pelo Integra Contador; apuração informativa de IBS e CBS; honorários e portal do cliente. Portão: um mês inteiro das empresas do grupo escriturado no sistema e um escritório externo pequeno em piloto.
 3. **Fase 2, regime normal e SPED.** Apuração de ICMS, ST, DIFAL, IPI, PIS e COFINS; EFD ICMS/IPI 020 e 021 por vigência; EFD-Contribuições; Reinf; DCTFWeb com MIT; ECD com signatários; patrimônio com depreciação dupla. Portão: EFD e ECD de uma empresa do grupo validadas nos programas oficiais e transmitidas.
 4. **Fase 3, folha e eSocial.** Eventos S-1.3, cálculo mensal, férias, 13º, rescisão, FGTS Digital e DCTFWeb ponta a ponta. Portão: folha de uma empresa do grupo fechada no sistema com totalizadores conferidos.
 5. **Fase 4, legal, IA e carteira completa.** Departamento legal com Redesim, assistente de IA com cota por escritório, aplicativo do empregado. Portão: escritório piloto operando a carteira inteira.
 6. **Fase 5, reforma plena e ecossistema.** CBS real, Simples híbrido, split payment, API pública. Portão: competência 01/2027 em diante apurada sem retrabalho.
 
-## 9. Stack
+## 10. Stack
 
 Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker na VPS atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id do escritório, toda ação grava auditoria, nada se apaga.
 
-## 10. Código
+## 11. Código
 
 O repositório é privado: o produto é comercial e vai operar dados fiscais, contábeis e trabalhistas de terceiros. Pode ser apresentado em entrevista ou avaliação acadêmica com o escritório de demonstração. A definição do produto, o relatório de mercado e as notas de pesquisa existem no repositório e seguem este case.

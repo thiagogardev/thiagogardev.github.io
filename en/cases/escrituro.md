@@ -6,9 +6,9 @@ description: Case study of Escrituro, a system for accounting firms built to mat
 
 # Escrituro: from market research to a product in production in two days
 
-**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code, verification and deployment · **Status:** Phase 0 in production, evolving
+**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code, verification and deployment · **Status:** Phase 0 in production; Phase 1 under construction, accounting module published
 
-> One-sentence summary: in two working days I went from a question ("can I build a system for accounting firms as good as or better than Contmatic Phoenix?") to a product with a name, a registered domain, market research with 659 dated sources, a product definition reviewed by an independent agent and the first phase of the system running in production, with domain, certificate and backups.
+> One-sentence summary: in two working days I went from a question ("can I build a system for accounting firms as good as or better than Contmatic Phoenix?") to a product with a name, a registered domain, market research with 659 dated sources, a product definition reviewed by an independent agent and the first phase of the system running in production, with domain, certificate and backups. On the same day, the accounting module of Phase 1 went live, built on an inventory of 233 functions from the market leaders.
 
 ## 1. Context and problem
 
@@ -119,7 +119,43 @@ The definition mapped 31 rules and layouts as software requirements, with versio
 | IN RFB 1.751/2017 (e-CAC power of attorney) | Power of attorney with a term, required to file on the firm's behalf | Powers of attorney per company with end date and an alert 30 days before |
 | LGPD arts. 37 and 46 | Record of processing operations and security | Field-by-field audit trail, access per company, certificate and two-factor secret encrypted |
 
-## 6. Numbers
+## 6. Phase 1, accounting module: the market floor and the gaps nobody fills
+
+With Phase 0 live, the next question was what a module needs in order for an accountant to call it complete. Instead of guessing, a second research run, on six parallel fronts, inventoried function by function what Contmatic, Domínio, Alterdata, Fortes, Questor, SCI, Makro and IOB document publicly: 233 functions, classified as floor (four or more vendors), differentiator (one to three) and gap (nobody). Folhamatic, named as a reference, no longer exists: it became IOB Online Sistemas in 2020. The accounting module was built from that list, with the whole floor and the gaps that fit the phase.
+
+The method changed scale: the core (a ten-table schema, pure functions for the chart of accounts, double entry, trial balance, income statement, balance sheet and year-end closing, an OFX reader, reconciliation rules and 64 new assertions) stayed with me and one agent; the 23 screens were split among four agents in parallel, each owning one folder and never touching the others' files. Integration, menus, help and the end-to-end browser check, with Playwright typing the entry and importing the statement, closed the loop.
+
+| Market floor | How it is in Escrituro |
+|---|---|
+| Model chart of accounts with the tax authority's reference codes, chart per company, short code, nature per account | ITG 1000 model with 182 accounts in four levels, copied to each company on first use; reference codes filled in Phase 2 from the official table, never invented |
+| Entries with several lines, standard narrations with variables, cost centers, batches, opening balances | Unlimited lines, Ctrl+M adds a line, Ctrl+Enter or F5 opens the account lookup, debits and credits must balance on screen |
+| OFX import and reconciliation by date, amount and narration | Dependency-free OFX reader; suggestion from an existing entry of the same amount within three days or from a rule; the analyst approves, the system never posts on its own |
+| Trial balance, ledger, journal, income statement, balance sheet, closing entries | All on screen and in print; year-end closing shows a simulation before posting |
+| Period closing with lock | A closed period blocks posting, deleting and restoring |
+
+| Gap no vendor documents | Escrituro's answer |
+|---|---|
+| Sequential numbering per book under ITG 2000 and linked reversals | A per-company number that is never reused; a reversal creates a new entry linked to the original in both directions |
+| Reopening a period with a reason and a trail | Reopening requires a reason and is written to the field-by-field audit trail |
+| Recycle bin with restore | Deleting sends the entry to the bin with a reason; restoring brings it back with the same number |
+| Reconciliation rules learned from manual reconciliations | The rule is born from the analyst's own reconciliation, keyed by a fragment of the narration, for one company or all |
+| Pre-ECD consistency panel | Inverted balances, entries without narration, accounts without reference code or without movement, open periods and the bin, on one panel |
+
+### Screens of the accounting module
+
+![Accounting entry with two lines, account lookup and balancing totals](../../assets/escrituro/lancamento.png)
+
+*Accounting entry. The account is typed by its short code or picked from the lookup; the difference between debits and credits stays visible until it balances, and Save only unlocks when it does.*
+
+![Bank reconciliation with the six lines of the sample OFX statement and the suggested entries](../../assets/escrituro/conciliacao.png)
+
+*Bank reconciliation. Each statement line carries its suggestion: an entry already posted with the same amount, or the learned rule; the analyst reconciles, generates the entry or ignores it with a reason.*
+
+![Trial balance for October 2026 with opening balance, debits, credits and closing balance](../../assets/escrituro/balancete.png)
+
+*Trial balance. Synthetic accounts in bold add up their analytic accounts by code; the opening balance includes the opening entry; debits and credits for the period balance.*
+
+## 7. Numbers
 
 All between 4 and 5 November 2026, from the first question to deployment.
 
@@ -140,9 +176,21 @@ All between 4 and 5 November 2026, from the first question to deployment.
 | Candidate names checked at the Brazilian registry | 10 |
 | Time from the decision to deploy to the system answering on the VPS | about 30 minutes |
 
-What is not done, stated just as clearly: backup restoration in production has not been tested yet, the trademark application has not been filed, the A1 certificate was only tested without a real file, the EFD ICMS/IPI and ISS deadlines use São Paulo's and the catalog has no state-level returns.
+After the accounting module, on the same 5 November:
 
-## 7. Lessons
+| Measure | Value |
+|---|---|
+| Functions inventoried in the leading systems | 233 (103 floor, 97 differentiators, 33 gaps), 518 citations |
+| Accounts in the model chart | 182, 132 analytic |
+| Database tables | 30 |
+| Screens and routes | 60, of which 23 in accounting |
+| Lines of TypeScript | 14,460 |
+| Automated assertions | 212, in 5 suites |
+| Agents building screens in parallel | 4 |
+
+What is not done, stated just as clearly: backup restoration in production has not been tested yet, the trademark application has not been filed, the A1 certificate was only tested without a real file, the EFD ICMS/IPI and ISS deadlines use São Paulo's, the catalog has no state-level returns, the tax authority's reference codes are blank and, from Phase 1, document capture, PGDAS-D through Integra Contador, fees and the client portal are still missing.
+
+## 8. Lessons
 
 - **Measuring beats describing.** The visual-standard agent read the colors from Phoenix screenshots pixel by pixel. The tokens came out exact, and the first screen already looked like the original instead of "inspired" by it.
 - **Independent review before code.** Thirty-one points fixed in an 11-thousand-word definition, by an agent that did not write it. Cheap compared to discovering in code that the AI quota would cost more than the subscription.
@@ -150,21 +198,21 @@ What is not done, stated just as clearly: backup restoration in production has n
 - **Business days are a business rule.** PGDAS-D postpones, FGTS Digital brings forward, and bank holidays count. The deadline engine is a pure function, tested against the real 2026 calendar.
 - **The right domain is .com.br.** escrituro.com had been with a speculator since April. For a Brazilian product, the .com.br registered directly at the national registry is enough, after unlinking the owner's tax ID from the previous provider.
 
-## 8. Next steps
+## 9. Next steps
 
 Six phases, each with a verifiable completion criterion and no promised dates. Each phase only starts with the previous one in real use.
 
 1. **Phase 0, foundation (live).** Still to do: test backup restoration in production, file the trademark and validate the five screens with accountants. Gate: a demo firm with the group's companies, a calendar generated by regime and an analyst marking obligations with receipts in production.
-2. **Phase 1, MVP for bookkeeping and the Simples tax routine.** Chart of accounts with reference mapping, entries, reconciliation, trial balance and closing, reusing the group's management accounting; capture of NF-e and CT-e by NSU with acknowledgment; national service invoice; PGDAS-D, DAS and DEFIS through Integra Contador; informational IBS and CBS assessment; fees and client portal. Gate: a full month of the group's companies booked in the system and a small external firm in pilot.
+2. **Phase 1, MVP for bookkeeping and the Simples tax routine (accounting module published).** Chart of accounts with reference mapping, entries, reconciliation, trial balance and closing, reusing the group's management accounting; capture of NF-e and CT-e by NSU with acknowledgment; national service invoice; PGDAS-D, DAS and DEFIS through Integra Contador; informational IBS and CBS assessment; fees and client portal. Gate: a full month of the group's companies booked in the system and a small external firm in pilot.
 3. **Phase 2, standard regime and SPED.** Assessment of ICMS, tax substitution, DIFAL, IPI, PIS and COFINS; EFD ICMS/IPI 020 and 021 by validity; EFD-Contribuições; Reinf; DCTFWeb with MIT; ECD with signatories; fixed assets with dual depreciation. Gate: EFD and ECD of one group company validated in the official programs and filed.
 4. **Phase 3, payroll and eSocial.** S-1.3 events, monthly calculation, vacations, 13th salary, terminations, FGTS Digital and DCTFWeb end to end. Gate: one group company's payroll closed in the system with totals checked.
 5. **Phase 4, corporate records, AI and full portfolio.** Corporate department with Redesim, AI assistant with a quota per firm, employee app. Gate: pilot firm operating its whole portfolio.
 6. **Phase 5, full tax reform and ecosystem.** Real CBS, hybrid Simples, split payment, public API. Gate: periods from 01/2027 onward assessed without rework.
 
-## 9. Stack
+## 10. Stack
 
 Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on the VPS behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the firm id, every action writes to the audit trail, nothing is deleted.
 
-## 10. Code
+## 11. Code
 
 The repository is private: the product is commercial and will process third-party tax, accounting and payroll data. It can be shown in interviews or academic evaluation with the demo firm. The product definition, the market report and the research notes exist in the repository and follow this case.
