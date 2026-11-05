@@ -96,6 +96,10 @@
     .mermaid { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 16px 0; }
     .mermaid svg { max-width: 100%; height: auto; }
 
+    /* Telas dos cases: imagem com borda, legenda em itálico logo abaixo */
+    main img { max-width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 8px; margin: 20px 0 6px; }
+    main p:has(> img) + p > em { display: block; color: var(--fg-soft); font-size: 14px; margin-top: -2px; }
+
     /* Ilustração da página inicial: chave em malha de nós, recolorida pela paleta (segue o tema). */
     .art { float: right; width: 300px; max-width: 42%; margin: 4px 0 16px 32px; }
     .chave { width: 100%; height: auto; display: block; }
@@ -130,12 +134,14 @@
         {% if en %}
         <a href="{{ '/en/#projects' | relative_url }}">Projects</a>
         <a href="{{ '/en/cases/genesis.html' | relative_url }}">Genesis case</a>
+        <a href="{{ '/en/cases/clinalta.html' | relative_url }}">Clinalta case</a>
         <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/thiago-garofalo-792a2653/" rel="me">LinkedIn</a>
         <a class="lang" href="{{ pt_url | relative_url }}" hreflang="pt-BR" title="Versão em português">PT</a>
         {% else %}
         <a href="{{ '/#projetos' | relative_url }}">Projetos</a>
         <a href="{{ '/cases/genesis.html' | relative_url }}">Case Genesis</a>
+        <a href="{{ '/cases/clinalta.html' | relative_url }}">Case Clinalta</a>
         <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/thiago-garofalo-792a2653/" rel="me">LinkedIn</a>
         <a class="lang" href="{{ en_url | relative_url }}" hreflang="en" title="English version">EN</a>

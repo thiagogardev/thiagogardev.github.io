@@ -21,11 +21,13 @@ Este repositório é o índice do que construí para rodar as minhas próprias e
 | **Site Acoplin EN/ES** | Site institucional bilíngue por domínio (acoplin.com e acoplin.es num app só), catálogo gerado a partir da API WordPress, formulário de cotação por e-mail | Next.js 16, i18n por middleware, Resend, Docker | No ar desde 25/08/2026 | Privado |
 | **Site TT Imports** | Catálogo de 13 linhas e 329 produtos, com fichas técnicas em HTML geradas por script a partir do catálogo original | Next.js 16, Python (pipeline de catálogo) | No ar | Privado |
 | **Site Asset Consulting** | Página institucional estática servida por nginx atrás do Caddy da VPS | HTML/CSS, Docker | No ar | Privado |
+| [**Clinalta**](cases/clinalta.md) | Sistema de gestão para consultórios e clínicas de até 20 profissionais: login com 2FA, multiclínica com perfis, pacientes com consentimentos versionados, agenda em 3 cliques, painel do dia, auditoria e exportação total. Nascido de pesquisa de mercado com 501 fontes datadas | Next.js 16, React 19, Drizzle, PGlite/PostgreSQL, Docker | Fase 0 construída, em evolução | Privado (case público) |
 | **Pipeline de marketing** | Moldes e montadores de carrossel e Reels: HTML para PNG via Playwright, narração por TTS, legenda sincronizada queimada no vídeo | Python, Playwright, edge-tts, ffmpeg | Em uso | Privado |
 
 ## Cases
 
 - [Genesis: agentes de prospecção comercial em produção](cases/genesis.md). Arquitetura, ciclo do agente, decisões, lições e plano de avaliação. Base para o trabalho da pós.
+- [Clinalta: do mercado ao produto em um dia](cases/clinalta.md). Método em quatro etapas, o que a pesquisa revelou, decisões de produto, Fase 0 com telas, números e próximos passos.
 - ERP de cotação com ICMS ST (em preparação)
 - Infraestrutura e recuperação de desastre: VPS, Docker, backup imutável com Object Lock (em preparação)
 
