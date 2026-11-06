@@ -30,6 +30,7 @@ Este repositório é o índice do que construí para rodar as minhas próprias e
 - [Genesis: agentes de prospecção comercial em produção](cases/genesis.md). Arquitetura, ciclo do agente, decisões, lições e plano de avaliação. Base para o trabalho da pós.
 - [Clinalta: do mercado ao produto em um dia](cases/clinalta.md). Método em quatro etapas, o que a pesquisa revelou, decisões de produto, Fase 0 com telas, números e próximos passos.
 - [Escrituro: do mercado ao produto no ar em dois dias](cases/escrituro.md). Método em cinco etapas com revisão independente, o que a pesquisa revelou sobre os líderes, decisões de produto, Fase 0 com telas, números e próximos passos.
+- [Como trabalho com agentes de IA](atividade.md). Registro diário, só com números, das tarefas fechadas, commits e deploys feitos com o Claude Code, atualizado por uma tarefa agendada.
 - ERP de cotação com ICMS ST (em preparação)
 - Infraestrutura e recuperação de desastre: VPS, Docker, backup imutável com Object Lock (em preparação)
 

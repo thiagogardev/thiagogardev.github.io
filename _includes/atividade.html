@@ -1,0 +1,129 @@
+{% assign en = false %}{% if page.lang == "en" %}{% assign en = true %}{% endif %}
+<style>
+  .atv { display: grid; gap: 20px; margin: 24px 0 8px; }
+  .atv-num { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .atv-num div { padding: 14px 16px; border-right: 1px solid var(--line); display: grid; gap: 2px; }
+  .atv-num div:last-child { border-right: 0; }
+  .atv-num b { font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .atv-num span { font-size: 13px; color: var(--fg-soft); }
+  .atv-quadro { border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; background: var(--bg); }
+  .atv-quadro h3 { margin: 0; font-size: 16px; }
+  .atv-quadro .sub { font-size: 13px; color: var(--fg-soft); margin: -8px 0 0; }
+  .atv-mapa { overflow-x: auto; padding-bottom: 4px; }
+  .atv-mapa svg { display: block; }
+  .atv-mapa text { fill: var(--fg-soft); font-size: 10px; font-family: inherit; }
+  .atv-escala { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--fg-soft); }
+  .atv-escala i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+  .atv-c0 { fill: var(--bg-soft); stroke: var(--line); }
+  .atv-c1 { fill: color-mix(in srgb, var(--accent) 25%, var(--bg)); }
+  .atv-c2 { fill: color-mix(in srgb, var(--accent) 50%, var(--bg)); }
+  .atv-c3 { fill: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
+  .atv-c4 { fill: var(--accent); }
+  i.atv-c0 { background: var(--bg-soft); border: 1px solid var(--line); }
+  i.atv-c1 { background: color-mix(in srgb, var(--accent) 25%, var(--bg)); }
+  i.atv-c2 { background: color-mix(in srgb, var(--accent) 50%, var(--bg)); }
+  i.atv-c3 { background: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
+  i.atv-c4 { background: var(--accent); }
+  .atv-barras { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .atv-barras li { display: grid; grid-template-columns: minmax(120px, 190px) 1fr 44px; gap: 10px; align-items: center; font-size: 14px; max-width: none; }
+  .atv-barras .trilho { height: 10px; background: var(--bg-soft); border-radius: 5px; overflow: hidden; }
+  .atv-barras .barra { height: 100%; background: var(--accent); border-radius: 5px; }
+  .atv-barras .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--fg-soft); }
+  .atv-rodape { font-size: 13px; color: var(--fg-soft); margin: 0; }
+  @media (max-width: 600px) {
+    .atv-num { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .atv-num div:nth-child(2) { border-right: 0; }
+    .atv-num div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .atv-barras li { grid-template-columns: 1fr 44px; }
+    .atv-barras .trilho { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+
+<div class="atv" id="atv" data-src="{{ '/assets/atividade.json' | relative_url }}" data-lang="{% if en %}en{% else %}pt{% endif %}">
+  <div class="atv-num" id="atv-num" aria-live="polite">
+    <div><b>…</b><span>{% if en %}tasks closed, last 30 days{% else %}tarefas fechadas, 30 dias{% endif %}</span></div>
+    <div><b>…</b><span>commits</span></div>
+    <div><b>…</b><span>{% if en %}production deploys{% else %}deploys em produção{% endif %}</span></div>
+    <div><b>…</b><span>{% if en %}active days{% else %}dias com atividade{% endif %}</span></div>
+  </div>
+  <div class="atv-quadro">
+    <h3>{% if en %}Tasks closed per day{% else %}Tarefas fechadas por dia{% endif %}</h3>
+    <p class="sub" id="atv-desde"></p>
+    <div class="atv-mapa" id="atv-mapa"></div>
+    <div class="atv-escala"><span>{% if en %}fewer{% else %}menos{% endif %}</span><i class="atv-c0"></i><i class="atv-c1"></i><i class="atv-c2"></i><i class="atv-c3"></i><i class="atv-c4"></i><span>{% if en %}more{% else %}mais{% endif %}</span></div>
+  </div>
+  <div class="atv-quadro">
+    <h3>{% if en %}Where the work went, last 30 days{% else %}Para onde foi o trabalho, 30 dias{% endif %}</h3>
+    <ul class="atv-barras" id="atv-barras"></ul>
+  </div>
+  <p class="atv-rodape" id="atv-rodape"></p>
+</div>
+
+<script>
+(function () {
+  var raiz = document.getElementById('atv');
+  var EN = raiz.getAttribute('data-lang') === 'en';
+  var NOMES = EN
+    ? { sistemas: 'Systems and ERPs', infra: 'Infrastructure and security', empresas: 'Company administration', marketing: 'Marketing and websites', carreira: 'Career and studies', outros: 'Other' }
+    : { sistemas: 'Sistemas e ERPs', infra: 'Infra e segurança', empresas: 'Gestão das empresas', marketing: 'Marketing e sites', carreira: 'Carreira e estudos', outros: 'Outros' };
+  var MESES = EN ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] : ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var DIA = 86400000;
+  function iso(t) { return new Date(t).toISOString().slice(0, 10); }
+  function utc(d) { return Date.parse(d + 'T00:00:00Z'); }
+  function fmtData(d) { var p = d.split('-'); return EN ? MESES[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0] : (+p[2]) + ' de ' + MESES[+p[1] - 1] + ' de ' + p[0]; }
+
+  fetch(raiz.getAttribute('data-src'), { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (D) {
+    var por = {}; D.dias.forEach(function (x) { por[x.dia] = x; });
+    var hoje = D.dias.length ? D.dias[D.dias.length - 1].dia : iso(Date.now());
+    var fim = utc(hoje);
+
+    // números dos últimos 30 dias
+    var t = 0, c = 0, y = 0, ativos = 0, fr = {};
+    for (var k = 0; k < 30; k++) {
+      var x = por[iso(fim - k * DIA)]; if (!x) continue;
+      t += x.tarefas; c += x.commits; y += x.deploys; if (x.tarefas || x.commits) ativos++;
+      for (var f in x.frentes) fr[f] = (fr[f] || 0) + x.frentes[f];
+    }
+    var bs = document.querySelectorAll('#atv-num b');
+    [t, c, y, ativos].forEach(function (v, i) { bs[i].textContent = v; });
+
+    // mapa de calor: colunas = semanas (domingo a sábado), até 26 semanas
+    var inicio = Math.max(utc(D.inicio), fim - 26 * 7 * DIA);
+    var dom = inicio - new Date(inicio).getUTCDay() * DIA;
+    var semanas = Math.floor((fim - dom) / DIA / 7) + 1;
+    var max = 1; D.dias.forEach(function (x) { if (x.tarefas > max) max = x.tarefas; });
+    function nivel(v) { if (!v) return 0; var r = v / max; return r > 0.75 ? 4 : r > 0.45 ? 3 : r > 0.2 ? 2 : 1; }
+    var Q = 13, G = 3, esq = EN ? 28 : 26, topo = 16;
+    var rot = EN ? ['', 'Mon', '', 'Wed', '', 'Fri', ''] : ['', 'seg', '', 'qua', '', 'sex', ''];
+    var W = esq + semanas * (Q + G), H = topo + 7 * (Q + G);
+    var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (EN ? 'Tasks closed per day' : 'Tarefas fechadas por dia') + '">';
+    rot.forEach(function (r, i) { if (r) s += '<text x="0" y="' + (topo + i * (Q + G) + 10) + '">' + r + '</text>'; });
+    var mesAnt = -1;
+    for (var w = 0; w < semanas; w++) {
+      var d0 = new Date(dom + w * 7 * DIA);
+      if (d0.getUTCMonth() !== mesAnt && w < semanas - 1) { mesAnt = d0.getUTCMonth(); s += '<text x="' + (esq + w * (Q + G)) + '" y="10">' + MESES[mesAnt] + '</text>'; }
+      for (var dd = 0; dd < 7; dd++) {
+        var tt = dom + (w * 7 + dd) * DIA;
+        if (tt > fim) break;
+        var di = iso(tt), xx = por[di], v = xx ? xx.tarefas : 0;
+        var antes = tt < utc(D.inicio);
+        s += '<rect x="' + (esq + w * (Q + G)) + '" y="' + (topo + dd * (Q + G)) + '" width="' + Q + '" height="' + Q + '" rx="2" class="atv-c' + (antes ? 0 : nivel(v)) + '"' + (antes ? ' opacity=".35"' : '') + '><title>' + fmtData(di) + ': ' + (antes ? (EN ? 'before the log started' : 'antes do início do registro') : v + (EN ? ' tasks, ' : ' tarefas, ') + (xx ? xx.commits : 0) + ' commits') + '</title></rect>';
+      }
+    }
+    document.getElementById('atv-mapa').innerHTML = s + '</svg>';
+    document.getElementById('atv-desde').textContent = (EN ? 'Log started on ' : 'Registro desde ') + fmtData(D.inicio) + (EN ? '. Hover a square for the day.' : '. Passe o mouse num quadrado para ver o dia.');
+
+    // barras por frente
+    var lista = Object.keys(fr).map(function (k) { return [k, fr[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    var topo1 = lista.length ? lista[0][1] : 1;
+    document.getElementById('atv-barras').innerHTML = lista.map(function (p) {
+      return '<li><span>' + (NOMES[p[0]] || p[0]) + '</span><span class="trilho"><span class="barra" style="display:block;width:' + Math.max(3, Math.round(p[1] / topo1 * 100)) + '%"></span></span><span class="v">' + p[1] + '</span></li>';
+    }).join('');
+
+    var at = new Date(D.atualizado).toLocaleString(EN ? 'en-US' : 'pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('atv-rodape').textContent = (EN ? 'Updated daily by a scheduled job. Last update: ' : 'Atualizado todo dia por uma tarefa agendada. Última atualização: ') + at + (EN ? ' (São Paulo time).' : ' (horário de Brasília).');
+  }).catch(function () {
+    document.getElementById('atv-rodape').textContent = EN ? 'The activity data could not be loaded right now.' : 'Não foi possível carregar os dados de atividade agora.';
+  });
+})();
+</script>

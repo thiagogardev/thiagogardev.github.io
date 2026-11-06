@@ -36,6 +36,7 @@ This is the index of what I built to run my own companies: software that replace
 - [Genesis: B2B prospecting agents in production](cases/genesis.md). Architecture, agent loop, decisions, lessons and evaluation plan. Basis for graduate work.
 - [Clinalta: from market research to a working product in one day](cases/clinalta.md). Four-step method, what the research revealed, product decisions, Phase 0 with screens, numbers and next steps.
 - [Escrituro: from market research to a product in production in two days](cases/escrituro.md). Five-step method with an independent review, what the research revealed about the leaders, product decisions, Phase 0 with screens, numbers and next steps.
+- [How I work with AI agents](atividade.md). A daily log, numbers only, of tasks closed, commits and deploys done with Claude Code, updated by a scheduled job.
 - Quotation ERP with ICMS-ST tax substitution (in preparation)
 - Infrastructure and disaster recovery: VPS, Docker, immutable backups with Object Lock (in preparation)
 
