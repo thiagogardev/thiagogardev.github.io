@@ -60,7 +60,7 @@ An honest course correction: the idea was born for my group's company, but the s
 The engine is a separate service with its own database; the accounting system talks to it through an internal API. A collector problem does not take the accounting system down, and the same engine can serve other systems.
 
 ```mermaid
-flowchart LR
+flowchart TB
   F[Official sources<br/>Confaz, state finance,<br/>official gazettes] --> C[Collector<br/>schedule per source]
   C --> V[Versions and diff<br/>hash, original<br/>kept as evidence]
   V --> E[Structured extractor<br/>tables, no AI]

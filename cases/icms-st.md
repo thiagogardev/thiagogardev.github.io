@@ -59,7 +59,7 @@ Uma correção de rumo honesta: a ideia nasceu para a empresa do grupo, mas o le
 O motor é um serviço separado, com banco próprio; o sistema contábil conversa com ele por uma API interna. Um problema no coletor não derruba o sistema contábil, e o mesmo motor pode servir outros sistemas.
 
 ```mermaid
-flowchart LR
+flowchart TB
   F[Fontes oficiais<br/>Confaz, secretarias,<br/>diários oficiais] --> C[Coletor<br/>agenda por fonte]
   C --> V[Versões e diff<br/>hash, original<br/>guardado como prova]
   V --> E[Extrator estruturado<br/>tabelas, sem IA]
