@@ -23,4 +23,4 @@ No task text, session title, customer, amount or infrastructure detail leaves my
 
 ## Why publish this
 
-Because it shows the method better than a list of tools: a human in the loop, a plan before execution, verification before closing and a record of what was done. The [Genesis](cases/genesis.md), [Clinalta](cases/clinalta.md) and [Escrituro](cases/escrituro.md) case studies show the outcome of this method as products.
+Because it shows the method better than a list of tools: a human in the loop, a plan before execution, verification before closing and a record of what was done. The [Genesis](cases/genesis.md), [Clinalta](cases/clinalta.md), [Escrituro](cases/escrituro.md) and [ICMS ST Monitor](cases/icms-st.md) case studies show the outcome of this method as products.

@@ -22,4 +22,4 @@ Nenhum texto de tarefa, título de sessão, cliente, valor ou detalhe de infraes
 
 ## Por que publicar isso
 
-Porque mostra o método melhor do que uma lista de ferramentas: humano no circuito, plano antes de executar, verificação antes de fechar e registro do que foi feito. Os cases do [Genesis](cases/genesis.md), do [Clinalta](cases/clinalta.md) e do [Escrituro](cases/escrituro.md) mostram o resultado desse método em produto.
+Porque mostra o método melhor do que uma lista de ferramentas: humano no circuito, plano antes de executar, verificação antes de fechar e registro do que foi feito. Os cases do [Genesis](cases/genesis.md), do [Clinalta](cases/clinalta.md), do [Escrituro](cases/escrituro.md) e do [Monitor ICMS ST](cases/icms-st.md) mostram o resultado desse método em produto.
