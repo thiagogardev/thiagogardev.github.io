@@ -1,13 +1,13 @@
 ---
 title: "ICMS ST: vigiar a legislação que muda sem aviso"
-description: Case do monitor de legislação de ICMS substituição tributária. Coleta e versiona as normas do Confaz e dos estados, detecta cada mudança com fonte e data, avisa por e-mail e publica dados abertos do Convênio 142/2018 com a vigência de cada redação. Construído com agentes de IA sob direção humana.
+description: Case do monitor de legislação de ICMS substituição tributária. Coleta e versiona as normas do Confaz e dos estados, detecta cada mudança com fonte e data, avisa por e-mail e publica dados abertos com vigência por item, a matriz de protocolos entre estados e a MVA de quatro estados, já usados no cálculo de um sistema real. Construído com agentes de IA sob direção humana.
 ---
 
 # ICMS ST: vigiar a legislação que muda sem aviso
 
-**Período:** novembro de 2026 até hoje · **Papel:** idealização, levantamento das fontes, arquitetura, código, validação e publicação · **Estado:** Fase 0 em produção (monitor coletando e avisando); Fase 1 em andamento, primeiro conjunto de dados publicado
+**Período:** novembro de 2026 até hoje · **Papel:** idealização, levantamento das fontes, arquitetura, código, validação e publicação · **Estado:** Fase 0 em produção (30 fontes vigiadas); Fase 1 publicada (Convênio 142 e matriz de protocolos); quatro estados com lista e MVA estruturadas; parâmetros já conferidos contra o sistema de cotação de uma empresa real
 
-> Resumo em uma frase: num dia de trabalho saí de uma dor de quem vende mercadoria ("a regra de ICMS ST muda e ninguém me avisa") para um monitor em produção que vigia as normas do Confaz e de São Paulo, guarda cada versão como prova e avisa por e-mail o que mudou e desde quando, mais um conjunto de dados aberto com os 1.043 CESTs vigentes do Convênio 142/2018 e o histórico de cada item, validado contra a lista oficial de São Paulo.
+> Resumo em uma frase: em dois dias saí de uma dor de quem vende mercadoria ("a regra de ICMS ST muda e ninguém me avisa") para um monitor em produção que vigia 30 fontes oficiais e avisa o que mudou e desde quando, mais dados abertos com o histórico de cada item, a matriz que diz para quais estados um vendedor paulista retém o imposto e a MVA de MG, PR, RS e BA, cruzados entre si e já usados para conferir o cálculo de um sistema em produção.
 
 ## 1. Contexto e problema
 
@@ -19,7 +19,7 @@ A inspiração veio de um projeto apresentado na comunidade da pós: um "orácul
 
 ## 2. Como a regra funciona
 
-Uma única resposta ("esta mangueira, de SP para MG, importada, tem MVA ajustada de X%") depende de cinco camadas de norma, cada uma com fonte e ritmo próprios.
+Uma única resposta ("esta abraçadeira, de SP para MG, tem MVA de X%") depende de cinco camadas de norma, cada uma com fonte e ritmo próprios.
 
 | Camada | O que define | Quem publica |
 |---|---|---|
@@ -42,17 +42,17 @@ Duas consequências para o desenho: a chave não é o NCM, é CEST mais descriç
 
 ## 3. O que o levantamento das fontes revelou
 
-Antes de código, três agentes em paralelo levantaram como o Confaz e seis estados (SP, MG, RJ, PR, RS, SC) publicam suas regras, abrindo cada página e confirmando cada endereço. Também mapearam o que os fornecedores comerciais entregam.
+Antes de código, três agentes em paralelo levantaram como o Confaz e seis estados publicam suas regras, abrindo cada página e confirmando cada endereço. Depois, cada estado lido trouxe sua surpresa.
 
 | Achado | Evidência (novembro de 2026) | O que muda no projeto |
 |---|---|---|
-| Não existe API nem planilha oficial de ST | Confaz publica o Convênio 142 só como uma página HTML de cerca de 930 KB; nenhum dos seis estados tem dado aberto de ST | O produto é, antes de tudo, um extrator e versionador de páginas |
-| São Paulo está saindo da ST | Autopeças, ferramentas, materiais elétricos, pneus e tintas saíram em 01/10/2026; materiais de construção saem em 01/02/2027 | Exclusão de segmento é evento de primeira classe, com data de efeitos, não só mudança de percentual |
-| Cada estado publica de um jeito | SC mantém redações passadas no próprio HTML; MG publica PDF com notas de efeitos; RJ guarda a lista consolidada num .doc de 2023; PR tem a MVA num PDF de 565 páginas sem consolidação | Ordem de ataque por qualidade da fonte: SC e MG primeiro, PR por último |
-| Alguns portais bloqueiam acesso de fora do Brasil | O portal do RJ recusa endereços estrangeiros; o do RS tem certificado TLS inválido | O coletor roda em servidor no Brasil e trata certificado por fonte |
-| Os concorrentes vendem "atualização diária" | Consultas web, simuladores e APIs para grandes empresas; nenhum oferece histórico versionado por item nem alerta cruzado com a carteira de clientes de um escritório | Diferencial: o parâmetro aplicado no sistema contábil, com o que mudou, quando e por qual norma |
+| Não existe API nem planilha oficial de ST | Confaz publica o Convênio 142 só como uma página HTML de cerca de 930 KB; nenhum estado lido tem dado aberto de ST | O produto é, antes de tudo, um extrator e versionador de páginas |
+| São Paulo está saindo da ST | Autopeças, ferramentas, materiais elétricos, pneus e tintas saíram em 01/10/2026; materiais de construção saem em 01/02/2027 | Exclusão de segmento é evento de primeira classe, com data de efeitos |
+| Cada estado publica num formato | MG em HTML por capítulo; PR num PDF consolidado de cerca de 590 páginas; RS o regulamento inteiro numa página de 10 MB; BA um PDF por período, de 2012 até hoje | Um leitor por estado, todos com a mesma saída: item, CEST, NCM, MVA e vigência |
+| Servidores incompletos ou fechados | Dois portais não enviam o certificado intermediário no TLS; um terceiro só responde a navegador e recusa coleta automática até de servidor no Brasil | Cadeia de certificados completada a partir do endereço que o próprio certificado indica, com a verificação ligada; o estado fechado fica fora do monitor até haver outra fonte |
+| Os concorrentes vendem "atualização diária" | Consultas web e simuladores; nenhum oferece histórico versionado por item nem alerta cruzado com a carteira de clientes de um escritório | Diferencial: o parâmetro aplicado no sistema, com o que mudou, quando e por qual norma |
 
-Uma correção de rumo honesta: a ideia nasceu para a empresa do grupo, mas o levantamento mostrou que, com a saída de São Paulo, o ganho dela está nas vendas para outros estados. O valor maior está em servir escritórios de contabilidade, que atendem dezenas de empresas, e por isso o monitor nasce como módulo do [Escrituro](escrituro.md).
+A ideia nasceu para a empresa do grupo, mas o levantamento mostrou que o valor maior está em servir escritórios de contabilidade, que atendem dezenas de empresas, e por isso o monitor nasce como módulo do [Escrituro](escrituro.md).
 
 ## 4. Arquitetura
 
@@ -62,27 +62,26 @@ O motor é um serviço separado, com banco próprio; o sistema contábil convers
 flowchart TB
   F[Fontes oficiais<br/>Confaz, secretarias,<br/>diários oficiais] --> C[Coletor<br/>agenda por fonte]
   C --> V[Versões e diff<br/>hash, original<br/>guardado como prova]
-  V --> E[Extrator estruturado<br/>tabelas, sem IA]
+  V --> E[Extratores por fonte<br/>tabelas, sem IA]
   V --> I[Interpretador com IA<br/>decretos em prosa]
   I --> R{Revisão humana}
-  E --> B[(Base de regras<br/>vigência e fundamento)]
-  R --> B
+  E --> D[(Dados abertos<br/>vigência e fundamento)]
+  R --> D
   V --> S[Saúde das fontes]
-  B --> A[Consulta e alertas<br/>por carteira]
+  D --> A[Consulta e alertas<br/>por carteira]
   S --> A
-  A --> X[Sistema contábil<br/>e e-mail]
+  A --> X[Sistemas de cálculo<br/>e e-mail]
 ```
 
-Duas regras de projeto que valem em todas as fases:
+Três regras de projeto que valem em todas as fases:
 
 - **Nada é sobrescrito.** Uma mudança encerra a vigência de uma regra e abre outra. Consulta em data passada tem que funcionar.
 - **Tabela entra direto; texto passa por revisão.** O que vem de tabela é extraído de forma determinística e testável. O que vem de decreto em prosa ("fica alterado o item 12 do Anexo XV") passa pela IA e por revisão humana até a precisão por estado ser medida.
+- **Dado e decisão ficam separados.** Os dados abertos dizem o que a norma diz. Quando a empresa decide não aplicar uma regra a um produto, isso fica numa lista de decisões, com motivo e data, no sistema que usa os dados.
 
 ## 5. Fase 0: o monitor em produção
 
-A fundação vigia hoje 12 fontes: o Convênio 142, os índices anuais de convênios, protocolos e preços de combustíveis do Confaz, e em São Paulo a lista de mercadorias, as quatro portarias de MVA ainda vigentes, os artigos de alíquota, a lista de atos recentes e a busca no Diário Oficial filtrada pela Fazenda.
-
-Cada página vira texto com uma linha por item de tabela, para que a mudança de uma MVA apareça como uma linha (exemplo ilustrativo):
+O monitor vigia hoje 30 fontes: o Convênio 142 e os índices anuais do Confaz; os 11 protocolos de materiais de construção que São Paulo assina; a lista e as portarias de MVA de São Paulo, os artigos de alíquota, os atos recentes e a busca no Diário Oficial; e as leis de ST de MG, PR, RS e BA. Cada página vira texto com uma linha por item de tabela, para que a mudança de uma MVA apareça como uma linha:
 
 ```
 - 2 | Argamassas | 10.002.00 | 3816.00.1 3824.50.00 | 70%
@@ -95,96 +94,122 @@ O trabalho mais fino foi evitar alarme falso, porque um monitor que grita à toa
 |---|---|
 | A data de "última atualização" do portal fica fora da comparação | O portal republica a página sem mudar o conteúdo |
 | Em listas, só gera aviso o que entrou | Ato que sai da janela de 30 dias não é notícia |
-| Uma nova tentativa antes de registrar erro | Portal de governo falha por minutos; na primeira semana isso aconteceu e foi pego |
+| Uma nova tentativa antes de registrar erro | Portal de governo falha por minutos |
 | Versão do extrator registrada em cada coleta | Melhorar o extrator muda o texto; sem isso, cada melhoria dispararia dezenas de avisos falsos |
 | Monitor do monitor | Avisa quando uma fonte erra seguidamente, para de responder, perde o conteúdo esperado ou encolhe de repente |
+| Normas em PDF lidas como texto | Um PDF regerado com o mesmo conteúdo não gera aviso, e o aviso de mudança mostra o trecho, não só "o arquivo mudou" |
 
-Os avisos chegam por e-mail: problema de fonte (repetido só se mudar ou depois de 24 horas, e com aviso quando volta ao normal) e cada mudança de norma, uma única vez, com as linhas que entraram e saíram e o link da fonte. A base e as páginas originais entram no backup de hora em hora, com cópia imutável fora do servidor.
+O monitor do monitor já pagou o investimento: quando entrou a página única de 10 MB do RS, a verificação de saúde acusou na hora que a tabela de construção não estava no texto vigiado (o título usava um espaço não separável que o seletor não reconhecia). Sem ela, o estado teria ficado meses "sem mudança" sem estar sendo vigiado.
 
-## 6. Fase 1: o Convênio 142 em dados abertos
+## 6. Fase 1: dados abertos
 
-O primeiro conjunto de dados está publicado em [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados): a lista nacional de bens sujeitos à ST, com a vigência de cada redação. O Confaz marca a história de cada item só por cor e por notas de texto livre:
+Tudo está publicado em [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados), com código, testes e licença aberta.
 
-```
-Nova redação dada ao item 42.0 do Anexo II pelo Conv. ICMS 66/22, efeitos a partir de 02.05.22.
-42.0 | 01.042.00 | 8421.32.00 | Depuradores ...        (redação atual)
-Redação original, efeitos até 01.05.22.
-42.0 | 01.042.00 | 8421.39.20 | Depuradores ...        (redação antiga, em verde)
-```
+### 6.1 Convênio 142 com vigência por redação
 
-O extrator lê essas notas, com erros de digitação e tudo ("sem feitos", "item14"), e transforma cada item em linhas com início e fim de vigência, situação na data de referência e convênio que fez a mudança.
+A lista nacional de bens sujeitos à ST. O Confaz marca a história de cada item só por cor e por notas de texto livre; o extrator lê essas notas, com erros de digitação e tudo, e transforma cada item em linhas com início e fim de vigência.
 
 | Resultado | Valor |
 |---|---|
 | CESTs vigentes | 1.043, um por CEST |
-| Redações no histórico | 1.220 (136 anteriores, 12 revogadas, 29 que nunca tiveram efeito) |
-| Segmentos | 25 |
-| Itens do Anexo XXVII (escala industrial não relevante) | 222 |
-| Notas de alteração sem dono | 0 |
-| Inconsistências da própria fonte, registradas | 5 |
+| Redações no histórico | 1.220 |
+| CESTs da lista oficial de São Paulo encontrados | 762 de 762 |
+| Inconsistências da própria fonte, registradas em público | 5 |
 
-A validação teve três camadas: casos conhecidos conferidos à mão (os fogões incluídos em 01/11/2026, a troca de NCM da água de coco em 01/06/2024, um item revogado em 01/01/2020); verificações automáticas (cada CEST vigente uma única vez, todo CEST com segmento existente, cada anexo com um só segmento); e cruzamento com uma fonte independente, a lista oficial de São Paulo. Dos 762 CESTs que ela cita, todos existem no conjunto; 756 estão vigentes e os 6 restantes são exatamente itens que o próprio convênio revogou.
+### 6.2 A matriz de protocolos: de SP para quais estados
 
-A página do Confaz tem erros próprios, e eles não foram "corrigidos" por conta própria: a nota de alteração do item 85.0 repete, por erro de cópia, o número do item 63.0; quatro redações antigas estão formatadas como se valessem hoje. Cada caso foi tratado pelo contexto e registrado num arquivo público, para quem usar os dados saber onde a fonte falha.
+Os 11 protocolos de materiais de construção com SP, lidos com a vigência de cada item, viram uma matriz: para cada NCM e estado de destino, se o vendedor paulista retém a ST, por qual protocolo e com qual MVA, quando o protocolo a fixa. São 2.290 redações, 486 itens vigentes e 672 linhas para 12 estados.
+
+O que a leitura mostrou e não estava em lugar nenhum:
+
+- **Dois modelos de lista.** Nove protocolos têm lista própria. RS e AP/PA trocaram a lista por uma referência ao anexo de construção do Convênio 142, menos os CESTs que a cláusula primeira exclui. Quem lê só "Anexo Único revogado" conclui, errado, que a ST para o RS acabou.
+- **A MVA nem sempre está no protocolo.** Em 6 dos 11 ela vem da lei do estado de destino, o que definiu a etapa seguinte.
+- **A limpeza de 2026.** Em 01/01/2026 e 01/08/2026 os protocolos perderam dezenas de itens. Exemplo concreto: a abraçadeira saiu do protocolo com Mato Grosso, e a base comercial de referência consultada ainda o listava.
+- **Três erros nas páginas do Confaz**, como a nota que revoga o item 69 seguida da linha "80. REVOGADO", registrados em público.
+
+### 6.3 A MVA dos estados, cruzada com os protocolos
+
+Para os estados cujo protocolo não traz MVA, o passo seguinte foi ler a lei estadual. Cada um tem um formato, e cada leitor devolve a mesma estrutura.
+
+| Estado | Fonte e formato | Itens | Cruzamento com o protocolo de SP |
+|---|---|---|---|
+| MG | RICMS/2023, Anexo VII, HTML por capítulo | 1.032 | 69 coerentes, 4 conflitos reais, 3 que casam só pelo NCM |
+| PR | Resolução SEFA 571/2019, PDF consolidado | 817 redações com vigência | 43 com MVA única, 9 com mais de uma (a descrição decide), 2 sem MVA |
+| RS | RICMS, Apêndice II, página única de 10 MB | 288 | 100% coerente nas exclusões de SP |
+| BA | RICMS-BA, Anexo 1, PDF por período | 311 redações | 77 coerentes, 2 conflitos reais, 4 só pelo NCM |
+
+Os conflitos reais são o tipo de coisa que nenhuma das duas fontes mostra sozinha. Exemplo: o protocolo SP-MG deixou de listar telhas de concreto e acessórios de cobre, mas a lei de MG ainda diz que a ST vale para mercadoria vinda de SP; no caminho inverso, o protocolo ainda lista ladrilhos e tubos de cobre que MG trata como exceção a SP. A BA ainda cita SP para tubos de cobre que o protocolo revogou em 01/08/2026.
+
+Os PDFs pediram leitura pela posição de cada palavra na página: no texto corrido, a MVA fica centralizada na célula e cai entre as linhas dos itens. As redações anteriores da BA vêm entre aspas no meio da tabela e são separadas com suas datas; no PR, a troca de tabela de 01/04/2026 fica no histórico com os dois valores.
+
+### 6.4 Comparação com uma base comercial
+
+Durante um período de avaliação de uma base tributária comercial, conferi item a item os produtos de uma empresa real. A base estava em dia em boa parte, mas desatualizada em pontos que a matriz pegou, como o protocolo com Mato Grosso citado acima e duas portarias de base de cálculo de SP revogadas meses antes. A base comercial serve de régua de comparação; nada do conteúdo dela entra nos dados abertos, que vêm só das fontes oficiais.
+
+### 6.5 Uso real: o sistema de cotação
+
+O sistema de cotação da empresa de distribuição passou a conferir as suas regras de ST contra os dados abertos: um script baixa a matriz e as MVAs estaduais publicadas, monta as regras por NCM e estado, compara com o cadastro e só grava com ordem explícita.
+
+A primeira conferência manual, ainda antes do script, achou estados que faltavam no cadastro de produtos vendidos, e a correção foi aplicada. Depois disso, com o script, o resultado em produção foi: 63 regras iguais aos dados abertos, nenhuma diferente, 14 mantidas onde o protocolo cobre mas a MVA do estado ainda não foi lida, e três produtos sem regra apresentados como sugestão, porque ST depende de NCM **e** descrição. A decisão sobre eles foi humana: um passou a ter ST, dois ficaram registrados como sem.
 
 ## 7. Como se mede
 
-O sistema só vale se for medido com um padrão de comparação independente e com métricas que um escritório entende. São quatro perguntas:
+O sistema só vale se for medido com um padrão de comparação independente e com métricas que um escritório entende.
 
 | Pergunta | Métrica | Como medir | Meta inicial |
 |---|---|---|---|
-| Percebe quando uma norma muda? | Recall de detecção | Lista de alterações do mês montada a partir do diário oficial, comparada com os eventos gerados | 98% em SP, 95% nos demais |
+| Percebe quando uma norma muda? | Recall de detecção | Alterações do mês montadas a partir do diário oficial, comparadas com os eventos gerados | 98% em SP, 95% nos demais |
 | Avisa à toa? | Precisão de detecção | Proporção de eventos que correspondem a mudança real de parâmetro | 90% |
-| O número extraído está certo? | Exatidão por campo | Amostra conferida na norma e na apuração real, separada por caminho (tabela ou texto) | 99% tabela, 95% texto antes da revisão |
+| O número extraído está certo? | Exatidão por campo | Amostra conferida na norma e na apuração real, por caminho (tabela ou texto) | 99% tabela, 95% texto antes da revisão |
 | Chega a tempo? | Latência | Diferença entre a publicação e a detecção | Mediana abaixo de 24 horas |
 
-A fila de revisão humana é o instrumento de medida: cada aprovação, correção e rejeição é um rótulo, e em poucos meses o sistema gera o seu próprio conjunto de teste por estado e por tipo de norma.
+O que já está medido:
 
-Para a pós, o experimento central é a extração de parâmetros fiscais a partir de texto normativo: comparar a IA com esquema de saída fixo contra uma linha de base por expressões regulares e contra a extração de tabelas, medindo exatidão por campo e por estado. Um segundo experimento é o enquadramento de NCM em CEST por similaridade de descrição, avaliado por Precision@K, a mesma métrica do [Genesis](genesis.md).
+- **Gabarito da matriz:** 34 casos de NCM por estado conferidos à mão no texto do protocolo e numa base comercial; a matriz acerta os 34, incluindo os difíceis (Mato Grosso sem a abraçadeira desde 01/01/2026 e com os niples, o NCM do cabo quebrado em duas linhas no protocolo de Alagoas).
+- **MVA estadual:** os valores dos produtos da empresa conferem com a norma e com a base comercial nos quatro estados, para a redação vigente e a anterior.
+- **Cruzamento entre fontes independentes:** lei estadual contra protocolo, com as taxas de coerência da tabela da seção 6.3. É a forma de medir exatidão sem depender de um gabarito feito à mão.
+- **Monitor:** coletas repetidas sem aviso falso nas 30 fontes; o mesmo resultado no computador de desenvolvimento e no servidor.
 
-O que já foi medido na Fase 0: três coletas completas seguidas sem nenhum aviso falso nas 12 fontes, e o mesmo resultado, caractere por caractere, no computador de desenvolvimento e no servidor. O critério para encerrar a fase é de 30 dias de coleta sem falha silenciosa.
+Para a pós, o experimento central segue sendo a extração de parâmetros a partir de texto normativo: comparar a IA com esquema de saída fixo contra a extração determinística, medindo exatidão por campo e por estado. Os leitores de tabela deste case viraram a linha de base e o gerador de rótulos desse experimento.
 
 ## 8. Números
 
-Tudo em 8 de novembro de 2026.
+Tudo em 9 de novembro de 2026.
 
 | Medida | Valor |
 |---|---|
-| Agentes de pesquisa em paralelo no levantamento das fontes | 3 |
-| Estados com fontes mapeadas | 6, mais o Confaz |
-| Fontes vigiadas em produção | 12 |
-| Testes automatizados | 19 no monitor, 10 no extrator do convênio |
-| Coletas completas seguidas sem aviso falso | 3 |
-| CESTs vigentes no conjunto de dados | 1.043 |
-| CESTs da lista de SP encontrados no conjunto | 762 de 762 |
-| Defeitos do meu próprio código pegos pelos testes e pela validação antes de publicar | 7 (3 no monitor, 4 no extrator) |
+| Fontes oficiais vigiadas em produção | 30 |
+| Protocolos lidos com vigência por item | 11 |
+| Estados com lista e MVA estruturadas | 4 (MG, PR, RS, BA) |
+| Linhas da matriz SP para destino | 672, para 12 estados |
+| Casos do gabarito da matriz acertados | 34 de 34 |
+| Testes automatizados | 19 no monitor, 31 nos dados abertos |
+| Regras do sistema de cotação confirmadas pelos dados abertos | 63, nenhuma divergente |
+| Conflitos reais entre lei estadual e protocolo, publicados | 6 |
 
-O último número é o que mais importa. No monitor: duas versões coletadas no mesmo segundo gravavam o original uma por cima da outra; quebras de linha dentro das células do Confaz partiam cada item em pedaços; e cada melhoria do extrator disparava avisos falsos. No extrator do convênio: o segmento deduzido pelo número do anexo (os códigos têm lacunas), linhas de item com formatação de título ignoradas, uma checagem de validação no lugar errado e o pior deles: a página do Confaz mantém o item revogado como uma linha normal com a descrição "REVOGADO", e a primeira versão do extrator publicava essas linhas como itens vigentes. A validação cruzada pegou antes da publicação, e um teste impede que volte.
-
-O que não está feito, dito com a mesma clareza: a Fase 0 ainda não completou os 30 dias; o e-mail de mudança real foi testado só com dados simulados, porque nenhuma norma vigiada mudou desde a entrada em produção; a matriz de protocolos entre estados ainda não existe; a MVA de nenhum estado está estruturada; o interpretador com IA e a fila de revisão ainda não foram construídos.
+O que não está feito, dito com a mesma clareza: AP e PA ficaram para depois (um portal só atende navegador, o outro não publica texto consolidado encontrável); a vigência no RS só existe onde a página anota a mudança item a item; bebidas, combustíveis e medicamentos na BA têm casos para revisão; o e-mail de mudança real ainda não disparou com uma norma vigiada mudando de verdade; o interpretador com IA e a fila de revisão ainda não foram construídos.
 
 ## 9. Lições
 
-- **Tempo real não existe em legislação.** O que existe é "detectado em até tantas horas depois da publicação, com efeitos a partir de tal data". É mais honesto e é o que importa para quem aplica.
-- **A validação cruzada pega o que o teste não pega.** Os testes passavam; foi o cruzamento com a lista de São Paulo e a contagem de CESTs vigentes que mostrou que itens revogados estavam saindo como vigentes.
-- **A fonte oficial também erra.** Nota copiada com o número errado, redação antiga formatada como atual. Registrar a inconsistência em público vale mais do que escondê-la numa correção silenciosa.
-- **Silêncio não é saúde.** Um coletor que parou e um coletor que não encontrou mudança produzem o mesmo log. Sem o monitor do monitor, 30 dias de "nenhuma mudança" não provariam nada.
-- **Pesquisar antes de prometer.** A suposição inicial era cobrir a ST interna de São Paulo; o levantamento mostrou o estado saindo do regime. Mudou o foco antes de uma linha de código.
+- **Tempo real não existe em legislação.** O que existe é "detectado em até tantas horas depois da publicação, com efeitos a partir de tal data".
+- **Duas fontes oficiais se fiscalizam.** Lei estadual e protocolo deveriam dizer a mesma coisa; quando não dizem, um dos dois está atrasado, e nenhuma das fontes sozinha mostra isso.
+- **A fonte oficial também erra.** Nota com o número errado, redação antiga formatada como atual, dois NCMs grudados numa célula. Registrar em público vale mais do que corrigir em silêncio.
+- **Silêncio não é saúde.** Um coletor que parou e um coletor que não encontrou mudança produzem o mesmo log. O monitor do monitor pegou uma fonte vigiada pela metade no mesmo dia em que ela entrou.
+- **Verificação de certificado não se desliga.** Dois portais com cadeia incompleta foram resolvidos completando a cadeia a partir do próprio certificado.
+- **Dado não decide sozinho.** A matriz casa por NCM; a ST depende também da descrição do produto. O sistema sugere, a pessoa decide, e a decisão fica registrada com motivo.
 
 ## 10. Próximos passos
 
-Cada fase tem um critério de pronto verificável.
-
 1. **Fase 0, fundação (no ar).** Portão: 30 dias de coleta sem falha silenciosa e toda mudança detectada em até 24 horas.
-2. **Fase 1, base nacional (em andamento).** Convênio 142 publicado; falta a matriz de protocolos e convênios entre estados por segmento, que não existe pronta em lugar nenhum. Portão: matriz conferida manualmente em 20 pares de estados e publicada como dado aberto.
-3. **Fase 2, São Paulo.** Segmentos que ainda têm ST, revogações de 2026 e 2027 com regra de estoque, interpretador com IA e fila de revisão, consulta por NCM com MVA ajustada. Portão: 50 consultas batendo com a apuração real.
-4. **Fase 3, Sul e Sudeste.** SC, MG, RJ, RS e PR, nessa ordem, com alerta por carteira e integração no sistema contábil. Portão: precisão acima de 95% por estado e um escritório piloto usando.
-5. **Fase 4, demais estados**, por ordem de demanda, com revisão por amostragem onde a precisão permitir.
+2. **Fase 1, base nacional (publicada).** Próximo: protocolos dos demais segmentos e de outras origens além de SP.
+3. **Estados.** AP e PA quando houver fonte acessível; depois SC, ES e RJ. Portão: lista e MVA cruzadas com o protocolo, como nos quatro primeiros.
+4. **Interpretador com IA e fila de revisão** para decretos em prosa, medido contra os leitores de tabela.
+5. **Escrituro.** Alerta por carteira de clientes do escritório e consulta por NCM com MVA ajustada.
 
 O horizonte também está no desenho: a reforma tributária reduz o ICMS a partir de 2029 e a ST tende a encolher. O motor de vigilância legislativa (coletar, versionar, detectar, interpretar, avisar) é o mesmo que os escritórios vão precisar para o IBS e a CBS.
 
 ## 11. Stack e código
 
-Python 3 · httpx · lxml · SQLite na Fase 0, desenhado para PostgreSQL · agendamento por cron em servidor no Brasil · avisos por e-mail via Resend · backup horário com cópia imutável.
+Python 3 · httpx · lxml · pdfplumber e pypdf para as normas em PDF · SQLite no monitor, desenhado para PostgreSQL · agendamento por cron em servidor no Brasil · avisos por e-mail via Resend · backup horário com cópia imutável · TypeScript no sistema de cotação.
 
-O conjunto de dados e o extrator do Convênio 142 são públicos, com licença aberta: [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados). O monitor é privado, porque vai operar dentro de um produto comercial; pode ser apresentado em entrevista ou avaliação acadêmica.
+Os dados abertos e os leitores (Convênio 142, protocolos, MG, PR, RS e BA) são públicos: [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados). O monitor é privado, porque vai operar dentro de um produto comercial; pode ser apresentado em entrevista ou avaliação acadêmica.
