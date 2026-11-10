@@ -1,14 +1,14 @@
 ---
 lang: en
 title: "ICMS ST: watching tax rules that change without notice"
-description: Case study of a monitor for Brazil's ICMS tax substitution (ST) legislation. It collects and versions the rules published by Confaz and the states, detects each change with source and date, sends email alerts and publishes open data with per-item effective dates, the interstate protocol matrix and the MVA of four states, already used to check the tax calculation of a real system. Built with AI agents under human direction.
+description: Case study of a monitor for Brazil's ICMS tax substitution (ST) legislation. It collects and versions the rules published by Confaz and the states, detects each change with source and date, sends email alerts and publishes open data with per-item effective dates, the interstate protocol matrix and the MVA of seven states, already used to check the tax calculation of a real system. Built with AI agents under human direction.
 ---
 
 # ICMS ST: watching tax rules that change without notice
 
-**Period:** November 2026 to date · **Role:** concept, source survey, architecture, code, validation and publishing · **Status:** Phase 0 in production (30 sources watched); Phase 1 published (Convênio 142 and protocol matrix); four states with structured goods lists and MVA; parameters already checked against a real company's quoting system
+**Period:** November 2026 to date · **Role:** concept, source survey, architecture, code, validation and publishing · **Status:** Phase 0 in production (37 sources watched); Phase 1 published (Convênio 142 and origin-to-destination protocol matrix); seven states with structured goods lists and MVA; parameters already checked against a real company's quoting system
 
-> One-sentence summary: in two days I went from a pain every goods seller in Brazil knows ("the ICMS ST rule changes and nobody tells me") to a monitor in production that watches 30 official sources and emails what changed and since when, plus open data with the history of every item, the matrix that says to which states a São Paulo seller must withhold the tax, and the MVA of Minas Gerais, Paraná, Rio Grande do Sul and Bahia, cross-checked against each other and already used to verify the calculation of a system in production.
+> One-sentence summary: in two days I went from a pain every goods seller in Brazil knows ("the ICMS ST rule changes and nobody tells me") to a monitor in production that watches 37 official sources and emails what changed and since when, plus open data with the history of every item, the matrix that says from which state to which the seller must withhold the tax, and the MVA of seven states, cross-checked against each other and already used to verify the calculation of a system in production.
 
 ## 1. Context and problem
 
@@ -82,7 +82,7 @@ Three design rules that hold in every phase:
 
 ## 5. Phase 0: the monitor in production
 
-The monitor now watches 30 sources: Convênio 142 and Confaz's yearly indexes; the 11 construction-materials protocols São Paulo has signed; São Paulo's goods list and MVA ordinances, rate articles, recent acts and the official gazette search; and the ST rules of MG, PR, RS and BA. Each page becomes text with one line per table item, so that an MVA change shows up as one line:
+The monitor now watches 37 sources: Convênio 142 and Confaz's yearly indexes; the 13 valid protocols São Paulo has signed (11 for construction materials, plus auto parts and electronics); São Paulo's goods list and MVA ordinances, rate articles, recent acts and the official gazette search; and the ST rules of MG, PR, RS, BA, MT, PE and AL. Each page becomes text with one line per table item, so that an MVA change shows up as one line:
 
 ```
 - 2 | Argamassas | 10.002.00 | 3816.00.1 3824.50.00 | 70%
@@ -128,6 +128,10 @@ What the reading showed that was nowhere else:
 - **The 2026 clean-up.** On 1 Jan 2026 and 1 Aug 2026 the protocols lost dozens of items. A concrete case: the clamp left the protocol with Mato Grosso, and the commercial reference database checked still listed it.
 - **Three errors in Confaz's pages**, such as the note revoking item 69 followed by the row "80. REVOKED", published in the open.
 
+After construction, the same reading moved on to other segments. Auto parts came in through the multilateral protocol São Paulo signs: the whole auto-parts list of Convênio 142, minus six codes, for 15 destination states. The six protocols SP had with Rio de Janeiro in other segments taught another lesson: five were revoked in 2026 (beverages, pharmaceuticals, cosmetics, cleaning products and tools), and only electronics remains. The reader did not notice when a whole protocol was revoked, which is stated in a note at the top of the page, and now it does. A concrete case: from SP to RJ, pliers lost ST when the tools protocol ended, but the electric drill keeps it, because it is also in the electronics protocol.
+
+Finally, the matrix stopped being only about São Paulo. The direction of each protocol is in its wording: "destined to the State of MG **or** to the State of SP" works both ways, "destined to the State of ES" only from SP. With that, the matrix answers for any signatory seller: 24,512 rows across 16 origins. Rows with SP as the destination are flagged, because applying them to goods entering SP depends on an act of the State Finance Secretary that was never issued.
+
 ### 6.3 The states' MVA, cross-checked against the protocols
 
 For the states whose protocol does not set the MVA, the next step was reading the state law. Each has its own format, and each reader returns the same structure.
@@ -138,20 +142,39 @@ For the states whose protocol does not set the MVA, the next step was reading th
 | PR | SEFA Resolution 571/2019, consolidated PDF | 817 wordings with dates | 43 with a single MVA, 9 with more than one (the description decides), 2 without MVA |
 | RS | RICMS, Appendix II, single 10 MB page | 288 | 100% consistent on SP exclusions |
 | BA | RICMS-BA, Annex 1, PDF per period | 311 wordings | 77 consistent, 2 real conflicts, 4 by NCM only |
+| MT | RICMS Annex X appendix (list) and an MVA ordinance in a Lotus Notes database | 1,006 valid | 39 consistent, no protocol CEST missing from the list |
+| PE | Consolidated decree, Annex 37-C, a 14 MB HTML page | 73 | 47 equal, 7 equal in one of the CESTs, 1 difference |
+| AL | Consolidated ST decree, PDF delivered by an API | 83 | 52 consistent, no differences |
 
 The real conflicts are the kind of thing neither source shows alone. Example: the SP-MG protocol no longer lists concrete roof tiles and copper fittings, but MG's law still says ST applies to goods coming from SP; the other way round, the protocol still lists ceramic tiles and copper pipes that MG treats as an exception for SP. Bahia still cites SP for copper pipes the protocol revoked on 1 Aug 2026.
 
+Each state added a rule that the protocol does not show. Mato Grosso has two MVAs for the same item, depending on the buyer's tax regime, and uses no adjusted MVA. Alagoas and the Pernambuco protocol split the MVA with and without freight in the tax base, which explained the Pernambuco "difference": the protocol has 41% and 56% for fiber cement, and Pernambuco only adopted 41%. Alagoas computes the adjusted MVA adding the poverty fund to the internal rate, and Rio de Janeiro does not.
+
 The PDFs required reading each word by its position on the page: in plain text the MVA is centred in the cell and falls between the item lines. Bahia's previous wordings come in quotes in the middle of the table and are separated with their dates; in Paraná, the table swap of 1 Apr 2026 stays in the history with both values.
 
-### 6.4 Comparison with a commercial database
+### 6.4 The states that cannot be read
+
+Not every official source can be watched by a program, and the case records this instead of hiding it:
+
+| State | Why |
+|---|---|
+| RJ | The legislation portal answers only a browser, and the ST list is a .doc file |
+| DF | The rules system answers any non-browser client with a firewall block |
+| ES | The database that publishes the MVAs dropped out of DNS |
+| PA | The legislation system serves only a browser |
+| AP | No findable consolidated text is published |
+
+In these cases, coverage from SP still comes from the protocol, which is on Confaz. Getting around a public body's block by pretending to be a browser is not an option. For RJ, the company's products were checked once by hand, against the official file and the commercial database, confirming that the update of 1 Nov 2026 did not change their MVAs.
+
+### 6.5 Comparison with a commercial database
 
 During a trial of a commercial tax database, I checked item by item the products of a real company. The database was mostly up to date, but stale on points the matrix caught, such as the Mato Grosso protocol above and two São Paulo base ordinances revoked months earlier. The commercial database is a yardstick; none of its content goes into the open data, which comes only from official sources.
 
-### 6.5 Real use: the quoting system
+### 6.6 Real use: the quoting system
 
 The distribution company's quoting system now checks its ST rules against the open data: a script downloads the published matrix and state MVAs, builds the rules per NCM and state, compares them with what is registered and writes only on explicit order.
 
-The first manual check, before the script, found states missing for products the company actually sells, and the fix was applied. After that, with the script, the production result was: 63 rules equal to the open data, none different, 14 kept where the protocol covers but the state MVA has not been read yet, and three products without rules shown only as suggestions, because ST depends on NCM **and** description. The decision on them was human: one now has ST, two were recorded as not having it.
+The first manual check, before the script, found states missing for products the company actually sells, and the fix was applied. After that, with the script, the production result was: 63 rules equal to the open data, none different, 14 kept where the protocol covers but the state MVA has not been read yet, and three products without rules shown only as suggestions, because ST depends on NCM **and** description. The decision on them was human: one now has ST, two were recorded as not having it. Once Mato Grosso's law was read, two fittings got the MVA that was missing for that state, and saving it was also decided by a person: today there are 65 rules equal to the open data and none different.
 
 ## 7. How it is measured
 
@@ -166,29 +189,30 @@ The system is only worth something if measured against an independent yardstick,
 
 What is already measured:
 
-- **Matrix gold set:** 34 NCM-by-state cases checked by hand against the protocol text and a commercial database; the matrix gets all 34 right, including the hard ones (Mato Grosso without the clamp since 1 Jan 2026 but with the nipples, the cable NCM split over two lines in the Alagoas protocol).
-- **State MVA:** the values for the company's products match the rule and the commercial database in all four states, for the current and the previous wording.
+- **Matrix gold set:** 44 NCM-by-state cases checked by hand against the protocol text and a commercial database; the matrix gets all 44 right, including the hard ones (Mato Grosso without the clamp since 1 Jan 2026 but with the nipples, the cable NCM split over two lines in the Alagoas protocol).
+- **State MVA:** the values for the company's products match the rule in seven states, and the commercial database where it has the table, for the current and the previous wording.
 - **Cross-checking independent sources:** state law against protocol, with the consistency rates in the table in section 6.3. It measures accuracy without depending on a hand-made gold set.
-- **Monitor:** repeated collections without false alerts across 30 sources; identical results on the development machine and the server.
+- **Monitor:** repeated collections without false alerts across 37 sources; identical results on the development machine and the server.
 
 For the graduate program, the central experiment is still extracting parameters from regulatory text: comparing AI with a fixed output schema against deterministic extraction, measuring per-field and per-state accuracy. The table readers in this case became the baseline and the label generator for that experiment.
 
 ## 8. Numbers
 
-All as of 9 November 2026.
+All as of 10 November 2026.
 
 | Measure | Value |
 |---|---|
-| Official sources watched in production | 30 |
-| Protocols read with per-item effective dates | 11 |
-| States with structured goods list and MVA | 4 (MG, PR, RS, BA) |
-| Rows in the SP-to-destination matrix | 672, for 12 states |
-| Matrix gold-set cases right | 34 of 34 |
-| Automated tests | 19 in the monitor, 31 in the open data |
-| Quoting-system rules confirmed by the open data | 63, none divergent |
-| Real conflicts between state law and protocol, published | 6 |
+| Official sources watched in production | 37 |
+| Protocols read with per-item effective dates | 18 (13 valid, 5 revoked in 2026) |
+| States with structured goods list and MVA | 7 (MG, PR, RS, BA, MT, PE, AL) |
+| Rows in the SP-to-destination matrix | 2,648, for 18 states |
+| Rows in the origin-to-destination matrix | 24,512, across 16 origins |
+| Matrix gold-set cases right | 44 of 44 |
+| Automated tests | 20 in the monitor, 47 in the open data |
+| Quoting-system rules confirmed by the open data | 65, none divergent |
+| Real conflicts between state law and protocol, published | 7 |
 
-What is not done, said just as plainly: AP and PA are postponed (one portal answers only a browser, the other does not publish findable consolidated text); RS effective dates exist only where the page notes an item-level change; beverages, fuels and medicines in Bahia have cases for review; the change email has not yet fired for a watched rule actually changing; the AI interpreter and the review queue are not built yet.
+What is not done, said just as plainly: RJ, DF, ES, AP and PA have no source a program can read (section 6.4); RS effective dates exist only where the page notes an item-level change; beverages, fuels and medicines in Bahia have cases for review; the change email has not yet fired for a watched rule actually changing; the AI interpreter and the review queue are not built yet.
 
 ## 9. Lessons
 
@@ -197,13 +221,15 @@ What is not done, said just as plainly: AP and PA are postponed (one portal answ
 - **The official source makes mistakes too.** A note with the wrong number, an old wording formatted as current, two NCM codes stuck together in one cell. Publishing them is worth more than fixing them silently.
 - **Silence is not health.** A collector that stopped and one that found no change produce the same log. The monitor for the monitor caught a source being half-watched on the day it was added.
 - **Certificate verification is not switched off.** Two portals with incomplete chains were handled by completing the chain from the certificate itself.
+- **Revocation is data too.** Five of the protocols read had been revoked as a whole in 2026, and a reader that looks only at the tables would have kept showing ST for tools and cosmetics.
+- **Direction lives in the wording.** "To the State of MG or to the State of SP" and "to the State of ES" look alike and are not: one works both ways, the other only one way.
 - **Data does not decide alone.** The matrix matches by NCM; ST also depends on the product description. The system suggests, a person decides, and the decision is recorded with its reason.
 
 ## 10. Next steps
 
 1. **Phase 0, foundation (live).** Gate: 30 days of collection without silent failure and every change detected within 24 hours.
-2. **Phase 1, national base (published).** Next: protocols for other segments and for origins other than SP.
-3. **States.** AP and PA when an accessible source exists; then SC, ES and RJ. Gate: goods list and MVA cross-checked against the protocol, as for the first four.
+2. **Phase 1, national base (published).** Next: the protocols São Paulo does not sign, to complete the matrix between the other states.
+3. **States.** SC and the states with no protocol with SP; RJ, DF, ES, AP and PA when a source a program can read exists. Gate: goods list and MVA cross-checked against the protocol, as for the first seven.
 4. **AI interpreter and review queue** for decrees in prose, measured against the table readers.
 5. **Escrituro.** Alerts by the firm's client portfolio and lookup by NCM with adjusted MVA.
 
@@ -213,4 +239,4 @@ The horizon is part of the design too: the tax reform phases ICMS down from 2029
 
 Python 3 · httpx · lxml · pdfplumber and pypdf for rules published as PDF · SQLite in the monitor, designed for PostgreSQL · cron scheduling on a server in Brazil · email alerts via Resend · hourly backup with an immutable copy · TypeScript in the quoting system.
 
-The open data and the readers (Convênio 142, protocols, MG, PR, RS and BA) are public: [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados). The monitor is private, because it will run inside a commercial product; it can be shown in an interview or an academic review.
+The open data and the readers (Convênio 142, protocols, MG, PR, RS, BA, MT, PE and AL) are public: [github.com/thiagogardev/icms-st-dados](https://github.com/thiagogardev/icms-st-dados). The monitor is private, because it will run inside a commercial product; it can be shown in an interview or an academic review.
