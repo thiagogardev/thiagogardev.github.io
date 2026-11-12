@@ -1,5 +1,5 @@
 {
- "atualizado": "2026-11-11T21:52:54.141Z",
+ "atualizado": "2026-11-12T02:52:59.297Z",
  "inicio": "2026-10-17",
  "frentes": [
   "sistemas",
@@ -327,14 +327,16 @@
   },
   {
    "dia": "2026-11-11",
-   "tarefas": 48,
-   "passos": 60,
-   "commits": 19,
+   "tarefas": 58,
+   "passos": 71,
+   "commits": 23,
    "deploys": 12,
-   "sessoes": 8,
+   "sessoes": 12,
    "frentes": {
-    "sistemas": 32,
-    "infra": 10,
+    "sistemas": 37,
+    "carreira": 1,
+    "outros": 2,
+    "infra": 12,
     "empresas": 5,
     "marketing": 1
    }
