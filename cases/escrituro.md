@@ -154,7 +154,23 @@ O método mudou de escala: o núcleo (esquema de dez tabelas, funções puras de
 
 *Balancete de verificação. Sintéticas em negrito somam as analíticas pelo código; o saldo anterior inclui a implantação de saldos; débitos e créditos do período fecham.*
 
-## 7. Números
+## 7. IA que responde pelo manual (RAG)
+
+O Escrituro tem um manual com mais de duzentos tópicos, e a pergunta de uso ("como lanço a provisão de férias?") não deveria virar chamado. A Pergunte à Ajuda responde com RAG (Retrieval-Augmented Generation): primeiro recupera os trechos certos do manual, depois pede ao modelo que responda usando só esses trechos e citando de onde tirou.
+
+| Etapa | Como funciona |
+|---|---|
+| Recuperação | BM25 local, sem custo e sem chamada externa: palavras sem acento reduzidas ao radical, siglas e códigos inteiros (S-1200, R-4010, CFOP), peso 4 para o título, 3 para o caminho da tela, 2 para o resumo e 1 para o corpo. Os 5 tópicos mais relevantes vão para o contexto, junto com o índice de todos os títulos |
+| Geração | Claude responde só com o que está nesses tópicos; se o manual não cobre a dúvida, a resposta diz isso em vez de inventar |
+| Conferência | Os tópicos citados na resposta são conferidos contra os enviados e viram links para o manual |
+| Privacidade e custo | Vai só a pergunta, com CPF, e-mail e telefone mascarados; pergunta repetida na mesma versão vem do cache; limite de 100 por escritório por dia; cerca de US$ 0,05 por pergunta nova |
+| Avaliação | Cada resposta tem "Ajudou? Sim ou Não". Os "Não" mostram onde o manual ou a busca falham |
+
+Por que busca por palavra-chave e não por embeddings: o manual usa o mesmo vocabulário das telas, e quem pergunta usa os nomes que vê na tela. Nesse cenário o BM25 com radicais acerta bem e não tem custo nem dependência. A troca por busca híbrida (palavra-chave mais embeddings, com reranker) fica condicionada a medição: se os "Não" mostrarem perguntas que a busca não achou, monta-se um conjunto de teste com a resposta certa de cada pergunta e compara-se o acerto entre os 5 primeiros antes de mudar.
+
+Além da Pergunte à Ajuda, a IA do Escrituro sugere a classificação de itens de nota e a conta da conciliação bancária usando como exemplos as regras que o próprio escritório já aprovou, e explica em linguagem simples os erros devolvidos pelo eSocial e pela EFD-Reinf. Em todos os casos a IA só sugere: quem grava é o analista, e cada decisão fica registrada.
+
+## 8. Números
 
 Tudo entre 4 e 5 de novembro de 2026, da primeira pergunta à publicação.
 
@@ -189,7 +205,7 @@ Depois do módulo Contábil, no mesmo 5 de novembro:
 
 O que não está feito, dito com a mesma clareza: a restauração do backup em produção ainda não foi testada, o pedido de marca no INPI não foi protocolado, o certificado A1 só foi testado sem arquivo real, os prazos de EFD ICMS/IPI e ISS usam os de São Paulo, o catálogo não tem declarações estaduais, o referencial da RFB está em branco e, da Fase 1, faltam a captura de documentos fiscais, o PGDAS-D pelo Integra Contador, honorários e portal.
 
-## 8. Lições
+## 9. Lições
 
 - **Medir vale mais que descrever.** O agente do padrão visual leu as cores das capturas do Phoenix pixel a pixel. Os tokens saíram exatos, e a primeira tela já parecia o original em vez de "inspirada" nele.
 - **Revisão independente antes do código.** Trinta e um pontos corrigidos numa definição de 11 mil palavras, por um agente que não a escreveu. É barato comparado a descobrir no código que a cota de IA custaria mais que a mensalidade.
@@ -197,7 +213,7 @@ O que não está feito, dito com a mesma clareza: a restauração do backup em p
 - **Dia útil é regra de negócio.** PGDAS-D posterga, FGTS Digital antecipa, e feriado bancário conta. O motor de prazos é função pura, testada contra o calendário real de 2026.
 - **O domínio certo é o .com.br.** O escrituro.com estava com um especulador desde abril. Para um produto brasileiro, o .com.br registrado direto no Registro.br resolve, depois de desfazer o vínculo do CPF com o provedor anterior.
 
-## 9. Próximos passos
+## 10. Próximos passos
 
 Seis fases, cada uma com critério de pronto verificável e sem datas prometidas. Cada fase só começa com a anterior em uso real.
 
@@ -208,10 +224,10 @@ Seis fases, cada uma com critério de pronto verificável e sem datas prometidas
 5. **Fase 4, legal, IA e carteira completa.** Departamento legal com Redesim, assistente de IA com cota por escritório, aplicativo do empregado. Portão: escritório piloto operando a carteira inteira.
 6. **Fase 5, reforma plena e ecossistema.** CBS real, Simples híbrido, split payment, API pública. Portão: competência 01/2027 em diante apurada sem retrabalho.
 
-## 10. Stack
+## 11. Stack
 
 Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker na VPS atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id do escritório, toda ação grava auditoria, nada se apaga.
 
-## 11. Código
+## 12. Código
 
 O repositório é privado: o produto é comercial e vai operar dados fiscais, contábeis e trabalhistas de terceiros. Pode ser apresentado em entrevista ou avaliação acadêmica com o escritório de demonstração. A definição do produto, o relatório de mercado e as notas de pesquisa existem no repositório e seguem este case.

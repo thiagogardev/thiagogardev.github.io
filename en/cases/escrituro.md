@@ -155,7 +155,23 @@ The method changed scale: the core (a ten-table schema, pure functions for the c
 
 *Trial balance. Synthetic accounts in bold add up their analytic accounts by code; the opening balance includes the opening entry; debits and credits for the period balance.*
 
-## 7. Numbers
+## 7. AI that answers from the manual (RAG)
+
+Escrituro has a manual with more than two hundred topics, and a usage question ("how do I post the vacation accrual?") should not become a support ticket. Ask the Help answers with RAG (Retrieval-Augmented Generation): it first retrieves the right passages of the manual, then asks the model to answer using only those passages and to cite where each answer came from.
+
+| Step | How it works |
+|---|---|
+| Retrieval | Local BM25, no cost and no external call: accent-free words reduced to their stem, acronyms and codes kept whole (S-1200, R-4010, CFOP), weight 4 for the title, 3 for the screen path, 2 for the summary and 1 for the body. The 5 most relevant topics go into the context, together with the index of all titles |
+| Generation | Claude answers only with what is in those topics; if the manual does not cover the question, the answer says so instead of making something up |
+| Check | The topics cited in the answer are checked against the ones sent and become links to the manual |
+| Privacy and cost | Only the question is sent, with tax IDs, e-mails and phone numbers masked; a repeated question in the same version comes from cache; limit of 100 per firm per day; about US$ 0.05 per new question |
+| Evaluation | Every answer has "Did this help? Yes or No". The "No" answers show where the manual or the retrieval fails |
+
+Why keyword search and not embeddings: the manual uses the same vocabulary as the screens, and users ask with the names they see on screen. In that setting stemmed BM25 performs well with no cost and no dependency. Moving to hybrid search (keywords plus embeddings, with a reranker) depends on measurement: if the "No" answers show questions the search missed, a test set with the right topic for each question is built and the hit rate in the top 5 is compared before changing anything.
+
+Besides Ask the Help, Escrituro's AI suggests the tax classification of invoice items and the account for bank reconciliation, using as examples the rules the firm itself has already approved, and explains in plain language the errors returned by eSocial and EFD-Reinf. In every case the AI only suggests: the analyst saves, and every decision is logged.
+
+## 8. Numbers
 
 All between 4 and 5 November 2026, from the first question to deployment.
 
@@ -190,7 +206,7 @@ After the accounting module, on the same 5 November:
 
 What is not done, stated just as clearly: backup restoration in production has not been tested yet, the trademark application has not been filed, the A1 certificate was only tested without a real file, the EFD ICMS/IPI and ISS deadlines use São Paulo's, the catalog has no state-level returns, the tax authority's reference codes are blank and, from Phase 1, document capture, PGDAS-D through Integra Contador, fees and the client portal are still missing.
 
-## 8. Lessons
+## 9. Lessons
 
 - **Measuring beats describing.** The visual-standard agent read the colors from Phoenix screenshots pixel by pixel. The tokens came out exact, and the first screen already looked like the original instead of "inspired" by it.
 - **Independent review before code.** Thirty-one points fixed in an 11-thousand-word definition, by an agent that did not write it. Cheap compared to discovering in code that the AI quota would cost more than the subscription.
@@ -198,7 +214,7 @@ What is not done, stated just as clearly: backup restoration in production has n
 - **Business days are a business rule.** PGDAS-D postpones, FGTS Digital brings forward, and bank holidays count. The deadline engine is a pure function, tested against the real 2026 calendar.
 - **The right domain is .com.br.** escrituro.com had been with a speculator since April. For a Brazilian product, the .com.br registered directly at the national registry is enough, after unlinking the owner's tax ID from the previous provider.
 
-## 9. Next steps
+## 10. Next steps
 
 Six phases, each with a verifiable completion criterion and no promised dates. Each phase only starts with the previous one in real use.
 
@@ -209,10 +225,10 @@ Six phases, each with a verifiable completion criterion and no promised dates. E
 5. **Phase 4, corporate records, AI and full portfolio.** Corporate department with Redesim, AI assistant with a quota per firm, employee app. Gate: pilot firm operating its whole portfolio.
 6. **Phase 5, full tax reform and ecosystem.** Real CBS, hybrid Simples, split payment, public API. Gate: periods from 01/2027 onward assessed without rework.
 
-## 10. Stack
+## 11. Stack
 
 Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on the VPS behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the firm id, every action writes to the audit trail, nothing is deleted.
 
-## 11. Code
+## 12. Code
 
 The repository is private: the product is commercial and will process third-party tax, accounting and payroll data. It can be shown in interviews or academic evaluation with the demo firm. The product definition, the market report and the research notes exist in the repository and follow this case.
