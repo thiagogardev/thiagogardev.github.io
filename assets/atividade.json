@@ -1,5 +1,5 @@
 {
- "atualizado": "2026-11-13T15:53:21.393Z",
+ "atualizado": "2026-11-13T21:53:29.951Z",
  "inicio": "2026-10-17",
  "frentes": [
   "sistemas",
@@ -343,14 +343,14 @@
   },
   {
    "dia": "2026-11-12",
-   "tarefas": 80,
-   "passos": 115,
+   "tarefas": 86,
+   "passos": 125,
    "commits": 34,
-   "deploys": 7,
-   "sessoes": 14,
+   "deploys": 10,
+   "sessoes": 15,
    "frentes": {
-    "sistemas": 34,
-    "outros": 21,
+    "sistemas": 39,
+    "outros": 22,
     "marketing": 4,
     "infra": 17,
     "empresas": 4
@@ -358,18 +358,18 @@
   },
   {
    "dia": "2026-11-13",
-   "tarefas": 31,
-   "passos": 34,
-   "commits": 9,
-   "deploys": 1,
-   "sessoes": 10,
+   "tarefas": 66,
+   "passos": 80,
+   "commits": 19,
+   "deploys": 2,
+   "sessoes": 14,
    "frentes": {
-    "outros": 5,
+    "outros": 11,
     "empresas": 3,
-    "infra": 8,
-    "sistemas": 7,
-    "carreira": 7,
-    "marketing": 1
+    "marketing": 5,
+    "infra": 12,
+    "sistemas": 28,
+    "carreira": 7
    }
   }
  ]
