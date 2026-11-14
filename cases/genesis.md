@@ -1,6 +1,6 @@
 # Genesis: agentes de prospecção comercial B2B em produção
 
-**Período:** julho de 2026 até hoje · **Papel:** idealização, arquitetura, código, operação e uso diário · **Estado:** em produção numa VPS própria, três instâncias
+**Período:** julho de 2026 até hoje · **Papel:** idealização, arquitetura, código, operação e uso diário · **Estado:** em produção numa VM na Oracle Cloud em São Paulo, três instâncias
 
 > Resumo em uma frase: um motor de agentes que lê fontes públicas de dados (concessões minerárias, cadastro de CNPJ, contratos públicos, importações), descobre quem compra o que eu vendo, encontra o canal de entrada e me entrega todo dia uma lista curta de missões comerciais com roteiro pronto.
 
@@ -16,7 +16,7 @@ Prospecção manual tinha três custos:
 
 Ferramentas de CRM e prospecção prontas não resolviam porque não conhecem as fontes brasileiras que importam neste nicho (ANM/SIGMINE, dump de CNPJ da Receita, PNCP, ComexStat) nem o conceito de "canal de entrada" em empresa industrial de grande porte, onde o caminho é o portal de homologação de fornecedores, e não um vendedor.
 
-Restrição autoimposta: **100% open-source e self-hosted**. Nada de plataforma gerenciada paga. O sistema tinha que rodar local no começo (máquina sem Docker) e depois na VPS, sem reescrever.
+Restrição autoimposta: **100% open-source e self-hosted**. Nada de plataforma gerenciada paga. O sistema tinha que rodar local no começo (máquina sem Docker) e depois num servidor, sem reescrever. A única exceção veio depois, opcional e paga por uso: a redação da proposta comercial pelo Claude (seção 5).
 
 ## 2. Resultado até agora
 
@@ -27,7 +27,7 @@ Restrição autoimposta: **100% open-source e self-hosted**. Nada de plataforma 
 | Mineradoras com canal de entrada verificado (seed curado) | 25 |
 | Missões geradas por dia (configurável) | 5 |
 | Instâncias em produção | 3 (mineração, válvulas, obras do Metrô-SP) |
-| Dependências pagas | 0 |
+| Serviços pagos obrigatórios | 0 (o Claude é opcional, cerca de US$ 0,03 por proposta redigida) |
 
 O que mudou na prática: a rotina comercial começa abrindo a Central de Comando, que já mostra as cinco empresas do dia, por que elas (fase do processo minerário, contrato vigente, UF importadora), o canal de entrada com link e o roteiro de contato. O funil (novo, contatado, cadastrado, aprovado, cotação, cliente) fica registrado por empresa, com anotações datadas.
 
@@ -91,7 +91,8 @@ flowchart LR
 - **Módulo 1, Interface** (Next.js 16, React 19, Tailwind 4). Server Components leem o banco direto via Drizzle; mutações por Server Actions. O frontend nunca fala com fonte externa.
 - **Módulo 2, Robô de Buscas** (processos Node com `tsx`, Playwright e cheerio). Um coletor por fonte, cada um com `config`, `collect`, `normaliza` e `run`. Grava em `empresas` e nas tabelas de evidência (`processos_minerarios`, `obras_contratos`, `comex_importacoes`).
 - **Módulo 3, Cron diário** (worker standalone com node-cron, sem Redis). Dois jobs: `coleta` e `gerar-acoes`. Cada rodada é registrada em `execucoes_cron` com detalhe em JSON.
-- **Base transversal** (`lib/db`). Mesmo esquema e mesma API com dois drivers: PGlite embarcado em dev (Postgres em WASM, sem Docker) e PostgreSQL + pgvector na VPS. A troca é uma variável de ambiente.
+- **Módulo 4, Importadores por NCM** (desde 09/11/2026). Reconstrói com dado aberto quem provavelmente importa cada NCM: habilitados no Siscomex e base aberta do CNPJ, cruzados com o Comex Stat por município, com pesos calibrados contra uma lista de referência. Soma o custo de importar e o teto de preço nacional de qualquer NCM, sinais de momento de compra e a proposta de substituição da importação. Detalhes no [case de inteligência de importação](inteligencia-importacao.md).
+- **Base transversal** (`lib/db`). Mesmo esquema e mesma API com dois drivers: PGlite embarcado em dev (Postgres em WASM, sem Docker) e PostgreSQL + pgvector em produção. A troca é uma variável de ambiente.
 - **Deploy**: Docker Compose com Postgres, app e worker; Postgres sem porta exposta; HTTPS por Caddy com certificado automático; autenticação básica no middleware; rota de health check; runbook de restauração testado.
 
 ### O padrão de instância
@@ -121,6 +122,7 @@ Duas escolhas de projeto são deliberadas:
 - **Cron como processo Node, não como fila.** Sem Redis nem broker. O volume (algumas coletas e uma geração por dia) não justifica a complexidade; o log em tabela dá a observabilidade necessária.
 - **Confiança por contato, não por empresa.** Cada canal tem fonte (curado, web, receita) e um número de 0 a 1. A missão mostra o canal de maior confiança. Isso separa dado verificado à mão de dado inferido.
 - **Priorização explicável.** O ranking é uma soma de pesos legíveis. Quando a missão aparece, o usuário entende por que aquela empresa veio primeiro. Isso vai importar na comparação com um ranking por LLM (seção 7).
+- **LLM na redação, não na decisão.** Desde 10/11/2026 o Claude redige o e-mail da proposta de substituição da importação a partir de fatos separados por uso. Só vão ao modelo os fatos liberados para o cliente (dado oficial ou agregado); o teto de preço, a margem e o que é da própria empresa nunca saem do servidor. Cada número do texto devolvido é conferido contra os fatos: número interno vira aviso vermelho, número que não está em lugar nenhum vira aviso de conferir. Saída estruturada validada por esquema, custo medido de cerca de US$ 0,03 por redação, cada redação gravada com tokens e custo. Sem a chave da API, o botão vira aviso e vale o rascunho determinístico. O envio continua humano.
 - **Fork por nicho em vez de multi-tenant.** Mais simples de operar e isolar falhas; o custo é duplicar correções. Aceitável com três instâncias; acima disso, vira um pacote compartilhado.
 
 ## 6. Lições
@@ -129,7 +131,7 @@ Duas escolhas de projeto são deliberadas:
 - **Cada API pública tem regra escondida.** O PNCP recusa janelas de data maiores que um ano (HTTP 422) e devolve 204 para período vazio; o coletor fatia por ano e trata o vazio como normal.
 - **Dado curado vale mais que volume.** 25 mineradoras com portal verificado geraram mais ação útil que 35 mil empresas sem canal. A métrica que importa é "leads acionáveis", não "leads".
 - **Grandes obras não aparecem onde se espera.** Os consórcios das linhas do Metrô foram licitados antes de 2025 ou por outra via e não estão no PNCP do órgão. Entram por seed curado, com a obra ligada à construtora membro.
-- **Operação faz parte do sistema.** Depois de um incidente de segurança que inutilizou os servidores físicos da empresa em setembro de 2026, este projeto e os demais passaram a ter backup com retenção imutável (Object Lock) e runbook de restauração testado. Um agente em produção que não volta de um desastre não é um agente em produção.
+- **Operação faz parte do sistema.** Depois de um incidente de segurança que inutilizou os servidores físicos da empresa em setembro de 2026, este projeto e os demais passaram a ter backup com retenção imutável (Object Lock) e runbook de restauração testado ([case de infraestrutura](infraestrutura.md)). Um agente em produção que não volta de um desastre não é um agente em produção.
 
 ## 7. Plano de avaliação e próximos passos
 
@@ -165,7 +167,7 @@ Missões sem avaliação contam como não qualificadas na versão estrita e são
 ### Camadas a adicionar
 
 1. **Qualificação do lead por LLM** em paralelo ao ranking determinístico (Ollama, Llama 3.1 ou Qwen 2.5). É a camada que a comparação acima avalia.
-2. **Personalização da mensagem por LLM.** O playbook hoje é um template por canal. Avaliação: taxa de resposta por mensagem gerada contra template, em teste A/B por semana.
+2. **Personalização da mensagem por LLM.** Implementada na proposta de substituição da importação, com o Claude (seção 5); o playbook das outras missões continua um template por canal. Falta a avaliação: taxa de resposta por mensagem gerada contra template, em teste A/B por semana.
 3. **RAG sobre documentos do nicho** (pgvector, nomic-embed-text, 768 dimensões). Editais, normas de homologação de fornecedores, páginas de portal. Objetivo: responder "o que esta empresa exige para homologar" a partir de fonte citada.
 4. **Malha fechada de aprendizado.** O desfecho do funil realimenta os pesos do ranking, primeiro com ajuste manual mensal, depois automático.
 
@@ -177,7 +179,7 @@ Missões sem avaliação contam como não qualificadas na versão estrita e são
 
 ## 8. Stack
 
-Next.js 16 · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PostgreSQL 16 + pgvector · PGlite · Playwright · cheerio · node-cron · Ollama · Docker Compose · Caddy · Ubuntu numa VPS própria.
+Next.js 16 · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PostgreSQL 16 + pgvector · PGlite · Playwright · cheerio · node-cron · API do Claude (redação da proposta) · Ollama (local, previsto para a qualificação) · Docker Compose · Caddy · Ubuntu numa VM ARM na Oracle Cloud em São Paulo.
 
 ## 9. Código
 

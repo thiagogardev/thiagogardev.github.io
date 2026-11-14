@@ -6,7 +6,7 @@ description: Case study of Genesis, an engine of prospecting agents that reads B
 
 # Genesis: B2B prospecting agents in production
 
-**Period:** July 2026 to date · **Role:** concept, architecture, code, operations and daily use · **Status:** in production on a self-operated VPS, three instances
+**Period:** July 2026 to date · **Role:** concept, architecture, code, operations and daily use · **Status:** in production on a VM on Oracle Cloud in São Paulo, three instances
 
 > One-sentence summary: an engine of agents that reads public data sources (mining concessions, the federal company registry, public procurement contracts, import statistics), discovers who buys what I sell, finds the entry channel and hands me, every day, a short list of commercial missions with a ready-made script.
 
@@ -22,7 +22,7 @@ Manual prospecting had three costs:
 
 Off-the-shelf CRM and prospecting tools did not solve it because they do not know the Brazilian sources that matter in this niche (the mining agency ANM/SIGMINE, the federal company registry dump, the public procurement portal PNCP, the ComexStat import statistics), nor the concept of an "entry channel" in a large industrial company, where the path is the supplier qualification portal, not a salesperson.
 
-Self-imposed constraint: **100% open source and self-hosted**. No paid managed platform. The system had to run locally at first (a machine without Docker) and later on the VPS, without a rewrite.
+Self-imposed constraint: **100% open source and self-hosted**. No paid managed platform. The system had to run locally at first (a machine without Docker) and later on a server, without a rewrite. The only exception came later, optional and paid per use: Claude drafting the commercial proposal (section 5).
 
 ## 2. Results so far
 
@@ -33,7 +33,7 @@ Self-imposed constraint: **100% open source and self-hosted**. No paid managed p
 | Mining companies with a verified entry channel (curated seed) | 25 |
 | Missions generated per day (configurable) | 5 |
 | Instances in production | 3 (mining, valves, São Paulo Metro works) |
-| Paid dependencies | 0 |
+| Mandatory paid services | 0 (Claude is optional, about US$ 0.03 per drafted proposal) |
 
 What changed in practice: the commercial routine starts by opening the Command Center, which already shows the five companies of the day, why them (mining process phase, active contract, importing state), the entry channel with a link and the contact script. The funnel (new, contacted, registered, approved, quoting, customer) is recorded per company, with dated notes.
 
@@ -97,7 +97,8 @@ flowchart LR
 - **Module 1, Interface** (Next.js 16, React 19, Tailwind 4). Server Components read the database directly through Drizzle; mutations go through Server Actions. The frontend never talks to an external source.
 - **Module 2, Search Robot** (Node processes run with `tsx`, Playwright and cheerio). One collector per source, each with `config`, `collect`, `normalize` and `run`. Writes to `companies` and to the evidence tables (`mining_processes`, `works_contracts`, `comex_imports`).
 - **Module 3, Daily cron** (standalone worker with node-cron, no Redis). Two jobs: `collect` and `generate-actions`. Every run is recorded in `cron_runs` with JSON details.
-- **Shared base** (`lib/db`). Same schema and same API with two drivers: embedded PGlite in development (Postgres compiled to WASM, no Docker) and PostgreSQL + pgvector on the VPS. Switching is one environment variable.
+- **Module 4, Importers by NCM** (since 2026-11-09). Rebuilds from open data who probably imports each NCM code: companies enabled in Siscomex and the open company registry, crossed with Comex Stat by municipality, with weights calibrated against a reference list. It adds the landed cost and the domestic price ceiling of any NCM, buying-moment signals and the import substitution proposal. Details in the [import intelligence case](inteligencia-importacao.md).
+- **Shared base** (`lib/db`). Same schema and same API with two drivers: embedded PGlite in development (Postgres compiled to WASM, no Docker) and PostgreSQL + pgvector in production. Switching is one environment variable.
 - **Deployment**: Docker Compose with Postgres, app and worker; Postgres without an exposed port; HTTPS through Caddy with automatic certificates; basic authentication in the middleware; health-check route; tested restore runbook.
 
 ### The instance pattern
@@ -127,6 +128,7 @@ Two design choices are deliberate:
 - **Cron as a Node process, not a queue.** No Redis or broker. The volume (a few collections and one generation per day) does not justify the complexity; the log table provides the needed observability.
 - **Confidence per contact, not per company.** Each channel has a source (curated, web, registry) and a number from 0 to 1. The mission shows the channel with the highest confidence. This separates hand-verified data from inferred data.
 - **Explainable prioritization.** The ranking is a sum of readable weights. When the mission appears, the user understands why that company came first. This will matter in the comparison against an LLM ranking (section 7).
+- **LLM for writing, not for deciding.** Since 2026-11-10 Claude drafts the e-mail of the import substitution proposal from facts separated by use. Only the facts cleared for the customer (official or aggregated data) go to the model; the price ceiling, the margin and the company's own data never leave the server. Every number in the returned text is checked against the facts: an internal number becomes a red warning, a number found nowhere becomes a check-this warning. Structured output validated by schema, measured cost of about US$ 0.03 per draft, every draft stored with tokens and cost. Without the API key, the button becomes a notice and the deterministic draft applies. Sending stays human.
 - **Fork per niche instead of multi-tenant.** Simpler to operate and to isolate failures; the cost is duplicating fixes. Acceptable with three instances; beyond that it becomes a shared package.
 
 ## 6. Lessons
@@ -135,7 +137,7 @@ Two design choices are deliberate:
 - **Every public API has a hidden rule.** PNCP rejects date windows longer than one year (HTTP 422) and returns 204 for an empty period; the collector slices by year and treats empty as normal.
 - **Curated data beats volume.** 25 mining companies with a verified portal generated more useful action than 35 thousand companies without a channel. The metric that matters is "actionable leads", not "leads".
 - **Large works do not show up where expected.** The consortia of the Metro lines were tendered before 2025 or through another route and are not in the agency's PNCP records. They enter through a curated seed, with the work linked to the member contractor.
-- **Operations are part of the system.** After a security incident that destroyed the company's physical servers in September 2026, this project and the others gained backups with immutable retention (Object Lock) and a tested restore runbook. An agent in production that does not come back from a disaster is not an agent in production.
+- **Operations are part of the system.** After a security incident that destroyed the company's physical servers in September 2026, this project and the others gained backups with immutable retention (Object Lock) and a tested restore runbook ([infrastructure case](infraestrutura.md)). An agent in production that does not come back from a disaster is not an agent in production.
 
 ## 7. Evaluation plan and next steps
 
@@ -171,7 +173,7 @@ Missions without an evaluation count as not qualified in the strict version and 
 ### Layers to add
 
 1. **Lead qualification by LLM** alongside the deterministic ranking (Ollama, Llama 3.1 or Qwen 2.5). This is the layer the comparison above evaluates.
-2. **Message personalization with an LLM.** Today the playbook is a template per channel. Evaluation: reply rate for generated messages against templates, in weekly A/B tests.
+2. **Message personalization with an LLM.** Implemented in the import substitution proposal, with Claude (section 5); the playbook for other missions is still a template per channel. Still missing is the evaluation: reply rate for generated messages against templates, in weekly A/B tests.
 3. **RAG over niche documents** (pgvector, nomic-embed-text, 768 dimensions). Tender notices, supplier qualification rules, portal pages. Goal: answer "what does this company require to qualify a supplier" from a cited source.
 4. **Closed learning loop.** The funnel outcome feeds back into the ranking weights, first with a monthly manual adjustment, then automatically.
 
@@ -183,7 +185,7 @@ Missions without an evaluation count as not qualified in the strict version and 
 
 ## 8. Stack
 
-Next.js 16 · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PostgreSQL 16 + pgvector · PGlite · Playwright · cheerio · node-cron · Ollama · Docker Compose · Caddy · Ubuntu on a self-operated VPS.
+Next.js 16 · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PostgreSQL 16 + pgvector · PGlite · Playwright · cheerio · node-cron · Claude API (proposal drafting) · Ollama (local, planned for lead qualification) · Docker Compose · Caddy · Ubuntu on an ARM VM on Oracle Cloud in São Paulo.
 
 ## 9. Code
 

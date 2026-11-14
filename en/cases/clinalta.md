@@ -6,7 +6,7 @@ description: Case study of Clinalta, a practice management system for clinics wi
 
 # Clinalta: from market research to a working product in one day
 
-**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code and verification · **Status:** Phase 0 built, evolving
+**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code and verification · **Status:** live at app.clinalta.com.br since 2026-11-05; Phase 1 (medical record) under construction
 
 > One-sentence summary: in a single working day I went from a question ("can I build a practice management system better than the market leaders?") to a product with a name, registered domains, market research with dated sources, a product definition and the first phase of the system working, tested and versioned.
 
@@ -114,9 +114,40 @@ The research surveyed 22 rules and turned them into software requirements, class
 | CFM Resolution 1.821/2007 and Law 13.787/2018 | Medical records kept for 20 years | Nothing is deleted: patients and appointments are deactivated or cancelled, never removed |
 | CFM Resolution 2.454/2026 | Patient informed and able to refuse AI; usage recorded | "Recording and AI" consent already in the catalog, for Phase 3 |
 
-## 6. Numbers
+## 6. After day one: live, and Phase 1 under way
 
-All on 4 November 2026, between the first question and the initial commit.
+Phase 0 went into production the next day, and Phase 1 started with what matters most to a physician: the medical record. Every delivery shipped with tests, a dated release note in the help and a backup before the switch.
+
+| Date | Delivery |
+|---|---|
+| 2026-11-04 | Embedded ICD-10: the official DATASUS table, 14,233 codes, searchable by name or by code, with or without the dot |
+| 2026-11-05 | Live at app.clinalta.com.br, with domain, certificate, daily backups and a tested restore (dump restored into a fresh database with the same tables and the 14,233 ICD-10 codes). Same day: front-desk waiting queue, tasks with due dates and owners, keyboard shortcuts |
+| 2026-11-09 | Trademark filed with the Brazilian patent and trademark office (INPI), class 42 |
+| 2026-11-12 | Server in Brazil: the system moved to a VM on Oracle Cloud in São Paulo. Help per screen (F1 opens the explanation of the current screen, with search across the manual) |
+| 2026-11-12 | Prescriptions through Memed integrated into the appointment, in sandbox (details below) |
+| 2026-11-13 | Medical record with a single patient timeline: clinical notes, prescriptions, attachments and appointments, filterable by type |
+| 2026-11-13 | Clinical notes by template: 7 templates (SOAP, free text and five specialties), with ICD-10; the draft saves itself and stays on the device if the connection drops |
+| 2026-11-13 | Attachments in the record (PDF and images, up to 10 MB), included in the daily backup; anything uploaded by mistake is flagged, never deleted |
+| 2026-11-13 | Temporary passwords: administrators no longer type anyone else's password; the system generates one valid for 7 days and forces a change at first login |
+| 2026-11-13 | Help reviewed screen by screen against the system, with a "When something goes wrong" section in every topic, for support |
+
+### Immutable clinical notes in three layers
+
+Medical records must be kept for 20 years and cannot be silently rewritten. A finalized note cannot be edited: a correction is a new version with a reason, and the previous one stays visible. Protection has three independent layers:
+
+1. **Application.** There is no screen or action to change or delete a version.
+2. **Chained SHA-256 hash.** Each version stores the hash of its canonical content and the hash of the previous version. When a note is opened, the system recomputes the chain and points to the first version that does not match.
+3. **Database.** A PostgreSQL trigger rejects any UPDATE or DELETE on the versions table, even for someone with direct database access.
+
+The export carries every version with its hash, so the clinic can verify it outside the system.
+
+### Prescriptions through Memed, stated honestly
+
+The physician clicks Prescribe in the appointment, Memed opens with the patient filled in (including the address the health regulator requires together with the tax ID), and the issued prescription is stored in the appointment and on the timeline; a prescription deleted in Memed is flagged, never lost. The integration runs in Memed's sandbox: **the prescriptions have no legal validity yet**, and will only have it once the production keys are released. Integrating instead of building covers controlled-drug prescriptions right away, which Memed handles; an in-house prescription module with SNCR numbering is planned for Phase 3.
+
+## 7. Numbers
+
+On day one, 4 November 2026, between the first question and the initial commit:
 
 | Measure | Value |
 |---|---|
@@ -132,29 +163,43 @@ All on 4 November 2026, between the first question and the initial commit.
 | Clicks to book an appointment | 3, verified in the browser |
 | Names tested at the Brazilian domain registry | 150, 33 available |
 
-What is not done, stated just as clearly: Phase 0 has not been deployed to the VPS yet, backup restoration has not been tested, the trademark application has not been filed and the patient tax ID is still stored in plain text (the encryption exists and protects, for now, only the two-factor secret).
+Ten days later, on 14 November 2026, recounted in the repository:
 
-## 7. Lessons
+| Measure | Value |
+|---|---|
+| Commits | 24 |
+| Versioned files | 211 |
+| Lines of TypeScript | 16,421 |
+| Database tables | 24 |
+| Screens and routes | 44 |
+| Automated assertions | 377, in 10 suites |
+| Clinical note templates | 7 |
+| Embedded ICD-10 codes | 14,233 |
+
+What is not done, stated just as clearly: prescriptions through Memed are still in sandbox and have no legal validity until the production keys are released; digital signature of clinical notes and documents signed with an ICP-Brasil certificate (medical certificates, exam requests, referrals) are still missing, as are simple finance with Pix, the Receita Saúde receipt and the clinic's WhatsApp; and the patient tax ID is still stored in plain text (the encryption exists and protects, for now, only the two-factor secret).
+
+## 8. Lessons
 
 - **Time zone is a requirement, not a detail.** The production server runs in UTC; "today" and "08:30" change day if computed in the process's zone. A date library computes everything in São Paulo time, with a test proving that 22:30 in São Paulo is still the same day.
 - **A blocked source becomes a declared gap.** Several vendors' sites refused automated access. Their prices were marked as "third-party source, with date" and not as official.
 - **A generic name is debt.** The first impulse was a category name that mixed languages and would hardly pass the trademark office. The final choice came from criteria (short, pronounceable, fits in an icon, .com.br available), 150 candidates checked automatically at the registry, and a rationale rather than taste.
 - **Dated research avoids expensive decisions.** Two rules I would have taken for granted were wrong in my head; the research corrected them before the code.
+- **Integrate before building, and state the real status.** Prescribing through Memed covered controlled drugs without waiting for an in-house module, but a sandbox integration has no legal validity. The case, the help and the roadmap say so in the same words.
 
-## 8. Next steps
+## 9. Next steps
 
 Five phases, each with a verifiable completion criterion and no promised dates. Each phase only starts with the previous one in real use.
 
-1. **Phase 0, foundation (built).** Still to do: deploy to the VPS with a domain, test backup restoration and file the trademark. Gate: a fictitious clinic with two physicians and one receptionist books, registers and sees the audit trail in production.
-2. **Phase 1, MVP for private practice.** Medical record with timeline, SOAP notes and specialty templates; searchable ICD-10; immutable versions with chained hashes; documents signed with a digital certificate and validated by the national validator; simple finance with Pix; Receita Saúde receipt per payment; official WhatsApp; offline reading. Gate: a real office uses it for 30 days without losing a single appointment.
+1. **Phase 0, foundation (live since 2026-11-05).** Deployed with domain, backups and a tested restore; trademark filed. Gate met: the demo clinic books, registers and sees the audit trail in production.
+2. **Phase 1, MVP for private practice (under construction).** Done: medical record with timeline, SOAP notes and specialty templates, searchable ICD-10, immutable versions with chained hashes, attachments and Memed prescriptions in sandbox. Still to do: documents signed with a digital certificate and validated by the national validator, legally valid prescriptions (Memed production keys), simple finance with Pix, Receita Saúde receipt per payment, official WhatsApp and full offline reading. Gate: a real office uses it for 30 days without losing a single appointment.
 3. **Phase 2, clinics and insurers.** Validated TISS claims, batches, denials and appeals; national service invoice; DMED annual report; physician payouts; patient portal; recall and NPS. Gate: a full month closed at a clinic with insurance, batch accepted by the insurer and payouts checked by the accountant.
 4. **Phase 3, AI, telemedicine, BI and inventory.** Ambient transcription with terms and recording; telemedicine; in-house prescriptions with SNCR numbering; no-show, denial and P&L dashboards. Gate: a pilot physician approves the AI draft in 20 consultations with minimal editing.
 5. **Phase 4, certification and ecosystem.** SBIS preparation, national health data network (RNDS) in FHIR, public API, WhatsApp agent, ICD-11.
 
-## 9. Stack
+## 10. Stack
 
-Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on the VPS behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the clinic id, every action writes to the audit trail, nothing is deleted.
+Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on an ARM VM on Oracle Cloud in São Paulo, behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the clinic id, every action writes to the audit trail, nothing is deleted.
 
-## 10. Code
+## 11. Code
 
 The repository is private: the product is commercial and handles health data. It can be shown in interviews or academic evaluation with the demo clinic. Product definition and architecture documents exist in the repository and follow this case.

@@ -1,13 +1,13 @@
 ---
 title: "Escrituro: do mercado ao produto no ar em dois dias"
-description: Case do Escrituro, sistema para escritórios de contabilidade construído para igualar e superar o Contmatic Phoenix. Pesquisa com fontes datadas, definição revisada por agente independente, fundação publicada em produção, tudo em dois dias com agentes de IA sob direção humana.
+description: Case do Escrituro, sistema para escritórios de contabilidade construído para igualar e superar o Contmatic Phoenix. Pesquisa com fontes datadas, definição revisada por agente independente, fundação publicada em produção, tudo em dois dias com agentes de IA sob direção humana, e a versão 0.65.0, com SPED, folha, eSocial e IA, dez dias depois.
 ---
 
 # Escrituro: do mercado ao produto no ar em dois dias
 
-**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código, verificação e publicação · **Estado:** Fase 0 no ar; Fase 1 em construção, módulo Contábil publicado
+**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código, verificação e publicação · **Estado:** versão 0.65.0 no ar (14/11/2026), Fases 0 a 3 entregues, piloto no próprio grupo do autor
 
-> Resumo em uma frase: em dois dias de trabalho, saí de uma pergunta ("dá para construir um sistema para escritórios de contabilidade igual ou melhor que o Contmatic Phoenix?") para um produto com nome, domínio registrado, pesquisa de mercado com 659 fontes datadas, definição de produto revisada por um agente independente e a primeira fase do sistema funcionando em produção, com domínio, certificado e backup. No mesmo dia, o módulo Contábil da Fase 1 entrou no ar, construído sobre um inventário de 233 funções dos sistemas líderes.
+> Resumo em uma frase: em dois dias de trabalho, saí de uma pergunta ("dá para construir um sistema para escritórios de contabilidade igual ou melhor que o Contmatic Phoenix?") para um produto com nome, domínio registrado, pesquisa de mercado com 659 fontes datadas, definição de produto revisada por um agente independente e a primeira fase do sistema funcionando em produção, com domínio, certificado e backup. No mesmo dia, o módulo Contábil da Fase 1 entrou no ar, construído sobre um inventário de 233 funções dos sistemas líderes. Dez dias depois, o sistema chegou à versão 0.65.0, com SPED, Lucro Presumido e Real, folha e eSocial, departamento legal, IA e reforma de 2027.
 
 ## 1. Contexto e problema
 
@@ -90,7 +90,7 @@ A fundação: o que todas as fases vão usar e o que um escritório já consegue
 
 ### Telas do escritório de demonstração
 
-Os dados abaixo são do escritório de demonstração, com as empresas do grupo cadastradas pelo script de seed.
+Os dados abaixo são do escritório de demonstração. O nome e o CNPJ da empresa ativa foram cobertos nas capturas.
 
 ![Painel da carteira: obrigações da competência por situação, próximos sete dias e carga por analista](../assets/escrituro/painel.png)
 
@@ -168,11 +168,36 @@ O Escrituro tem um manual com mais de duzentos tópicos, e a pergunta de uso ("c
 
 Por que busca por palavra-chave e não por embeddings: o manual usa o mesmo vocabulário das telas, e quem pergunta usa os nomes que vê na tela. Nesse cenário o BM25 com radicais acerta bem e não tem custo nem dependência. A troca por busca híbrida (palavra-chave mais embeddings, com reranker) fica condicionada a medição: se os "Não" mostrarem perguntas que a busca não achou, monta-se um conjunto de teste com a resposta certa de cada pergunta e compara-se o acerto entre os 5 primeiros antes de mudar.
 
-Além da Pergunte à Ajuda, a IA do Escrituro sugere a classificação de itens de nota e a conta da conciliação bancária usando como exemplos as regras que o próprio escritório já aprovou, e explica em linguagem simples os erros devolvidos pelo eSocial e pela EFD-Reinf. Em todos os casos a IA só sugere: quem grava é o analista, e cada decisão fica registrada.
+Além da Pergunte à Ajuda, a IA do Escrituro sugere a classificação de itens de nota e a conta da conciliação bancária usando como exemplos as regras que o próprio escritório já aprovou, e explica em linguagem simples os erros devolvidos pelo eSocial e pela EFD-Reinf. Antes de qualquer chamada, CPF, e-mail, telefone e chave Pix são pseudonimizados, e a resposta é reidratada no servidor. Em todos os casos a IA só sugere: quem grava é o analista, e cada decisão fica registrada.
 
-## 8. Números
+## 8. Da fundação à 0.65 em cerca de dez dias
 
-Tudo entre 4 e 5 de novembro de 2026, da primeira pergunta à publicação.
+Entre 5 e 14 de novembro de 2026, o Escrituro foi da Fase 0 à versão 0.65.0, em 97 commits. O método dos dois primeiros dias virou rotina:
+
+- **Entregas diárias e versionadas.** Cada versão tem número, nota datada nas Novidades da ajuda e commit próprio; a produção recebe a versão inteira, nunca pedaços.
+- **Backup antes de cada versão.** Um dump do banco de produção antes de toda troca, além do backup de hora em hora, para que qualquer versão possa ser desfeita.
+- **Testes por suíte.** Cada módulo nasce com a sua suíte (folha, eSocial, Reinf, ECD, importação e assim por diante), e todas rodam antes de publicar: de 4 suítes na Fase 0 para 65.
+- **Validação na fonte oficial.** Arquivos SPED conferidos nos validadores da Receita (EFD ICMS/IPI no PVA; EFD-Contribuições e ECF no PGE) e eventos do eSocial e da EFD-Reinf enviados à produção restrita do governo, com recibo e totalizadores iguais à folha, centavo a centavo.
+- **Regra escrita onde a norma deixa dúvida.** O que não está claro vira "regra adotada", documentada na ajuda e levada a um contador, em vez de suposição silenciosa.
+
+| Área | O que está no ar na 0.65.0 |
+|---|---|
+| Contábil | Plano de contas, lançamentos, conciliação por OFX, balancete, DRE, balanço, demonstrações (DFC, DMPL/DLPA, notas explicativas), provisões de férias e 13º, patrimônio e CIAP |
+| SPED e declarações | ECD, ECF, EFD ICMS/IPI, EFD-Contribuições, EFD-Reinf, DeSTDA e DEFIS |
+| Regimes | Simples Nacional, Lucro Presumido e Lucro Real com e-Lalur e e-Lacs; PIS/COFINS só no regime cumulativo |
+| Folha | Cálculo mensal, férias, 13º, rescisão, afastamentos, SST, dissídio e processo trabalhista; eSocial validado na produção restrita; DCTFWeb, FGTS Digital e pagamento pelo banco em CNAB 240 |
+| Legal e federal | Departamento legal pela Redesim; certidões e caixa postal do e-CAC e do DTE pelo Integra Contador, com monitor diário |
+| IA | Classificação de itens de nota e da conciliação a partir das regras já aprovadas, explicação dos erros do eSocial e da Reinf e Pergunte à Ajuda, com CPF, e-mail, telefone e chave Pix pseudonimizados antes de ir ao modelo |
+| Relacionamento | Honorários, portal e app do cliente (PWA com a marca do escritório), painel do cliente, BI do escritório com metas por analista e pesquisa NPS |
+| Reforma 2027 | CBS e IBS no regime regular com créditos de transição e simulador do Simples híbrido |
+| ICMS ST e comércio exterior | Consulta de ICMS ST dos 27 estados; conferência das notas de importação, processo de importação com câmbio e simulador de custo de importação |
+| Rotina fiscal | Captura de NF-e por NSU e pela chave de acesso, boletim fiscal semanal e PIS/COFINS monofásico no Simples (0.65.0, 14/11/2026) |
+
+O piloto é o próprio grupo do autor, desde a competência 11/2026: roda em paralelo à contabilidade atual, sem transmitir declarações pelo Escrituro até a conferência dos primeiros meses.
+
+## 9. Números
+
+Entre 4 e 5 de novembro de 2026, da primeira pergunta à publicação:
 
 | Medida | Valor |
 |---|---|
@@ -203,31 +228,45 @@ Depois do módulo Contábil, no mesmo 5 de novembro:
 | Asserções automatizadas | 212, em 5 suítes |
 | Agentes construindo telas em paralelo | 4 |
 
-O que não está feito, dito com a mesma clareza: a restauração do backup em produção ainda não foi testada, o pedido de marca no INPI não foi protocolado, o certificado A1 só foi testado sem arquivo real, os prazos de EFD ICMS/IPI e ISS usam os de São Paulo, o catálogo não tem declarações estaduais, o referencial da RFB está em branco e, da Fase 1, faltam a captura de documentos fiscais, o PGDAS-D pelo Integra Contador, honorários e portal.
+Na versão 0.65.0, em 14 de novembro de 2026, recontado no repositório:
 
-## 9. Lições
+| Medida | Valor |
+|---|---|
+| Commits | 97 |
+| Arquivos versionados | 1.030 |
+| Linhas de TypeScript | 121.911 |
+| Tabelas no banco | 159 |
+| Migrations | 59 |
+| Telas e rotas | 251 |
+| Asserções automatizadas | 3.635, em 65 suítes |
+| Tópicos do manual | mais de 200 |
+
+O que não está feito, dito com a mesma clareza: a transmissão do PGDAS-D em produção está bloqueada até a confirmação de um parâmetro da tabela de atividades do Serpro (o ambiente de demonstração só aceita o exemplo oficial); o PIS/COFINS não cumulativo do Lucro Real não é apurado, e a EFD-Contribuições sai só no regime cumulativo; eSocial e EFD-Reinf foram validados na produção restrita, mas ainda não têm movimento real em produção; a remessa CNAB 240 ainda precisa ser homologada com um banco; a alíquota da CBS de 2027 é parâmetro provisório até a resolução do Senado; e o piloto ainda não transmite nada pelo Escrituro.
+
+## 10. Lições
 
 - **Medir vale mais que descrever.** O agente do padrão visual leu as cores das capturas do Phoenix pixel a pixel. Os tokens saíram exatos, e a primeira tela já parecia o original em vez de "inspirada" nele.
 - **Revisão independente antes do código.** Trinta e um pontos corrigidos numa definição de 11 mil palavras, por um agente que não a escreveu. É barato comparado a descobrir no código que a cota de IA custaria mais que a mensalidade.
 - **Datas externas não esperam o roteiro.** A definição amarrava critérios de pronto a janeiro de 2027. A revisão desamarrou: o leiaute 021 e o simulador do Simples híbrido entram na Fase 2, e a competência 01/2027 pode ser refeita depois a partir dos arquivos.
 - **Dia útil é regra de negócio.** PGDAS-D posterga, FGTS Digital antecipa, e feriado bancário conta. O motor de prazos é função pura, testada contra o calendário real de 2026.
+- **O validador oficial é o teste final.** A primeira rodada da ECF do Lucro Real no PGE devolveu dezenas de erros; a segunda, só os do ambiente. Um dos erros de outra declaração vinha de um traço longo copiado das descrições oficiais, que o próprio validador recusa.
 - **O domínio certo é o .com.br.** O escrituro.com estava com um especulador desde abril. Para um produto brasileiro, o .com.br registrado direto no Registro.br resolve, depois de desfazer o vínculo do CPF com o provedor anterior.
 
-## 10. Próximos passos
+## 11. Roteiro: entregue e o que falta
 
-Seis fases, cada uma com critério de pronto verificável e sem datas prometidas. Cada fase só começa com a anterior em uso real.
+As seis fases da definição, com o que já foi entregue e o que falta. Os portões continuam os mesmos: só contam com uso real.
 
-1. **Fase 0, fundação (no ar).** Falta testar a restauração do backup em produção, protocolar a marca e validar as cinco telas com contadores. Portão: escritório de demonstração com as empresas do grupo, agenda gerada por regime e um analista marcando obrigações com recibo em produção.
-2. **Fase 1, MVP contábil e fiscal do Simples (módulo Contábil publicado).** Plano de contas com referencial, lançamentos, conciliação, balancete e fechamento, reaproveitando o controle gerencial do grupo; captura de NF-e e CT-e por NSU com manifestação; NFS-e nacional; PGDAS-D, DAS e DEFIS pelo Integra Contador; apuração informativa de IBS e CBS; honorários e portal do cliente. Portão: um mês inteiro das empresas do grupo escriturado no sistema e um escritório externo pequeno em piloto.
-3. **Fase 2, regime normal e SPED.** Apuração de ICMS, ST, DIFAL, IPI, PIS e COFINS; EFD ICMS/IPI 020 e 021 por vigência; EFD-Contribuições; Reinf; DCTFWeb com MIT; ECD com signatários; patrimônio com depreciação dupla. Portão: EFD e ECD de uma empresa do grupo validadas nos programas oficiais e transmitidas.
-4. **Fase 3, folha e eSocial.** Eventos S-1.3, cálculo mensal, férias, 13º, rescisão, FGTS Digital e DCTFWeb ponta a ponta. Portão: folha de uma empresa do grupo fechada no sistema com totalizadores conferidos.
-5. **Fase 4, legal, IA e carteira completa.** Departamento legal com Redesim, assistente de IA com cota por escritório, aplicativo do empregado. Portão: escritório piloto operando a carteira inteira.
-6. **Fase 5, reforma plena e ecossistema.** CBS real, Simples híbrido, split payment, API pública. Portão: competência 01/2027 em diante apurada sem retrabalho.
+1. **Fase 0, fundação.** No ar desde 05/11/2026; marca depositada no INPI em 09/11/2026, classe 42.
+2. **Fase 1, contábil e fiscal do Simples.** Entregue entre 05 e 06/11/2026 (0.2 a 0.7): contábil, captura de NF-e e CT-e, NFS-e nacional, apuração do Simples e DEFIS, honorários e portal. Falta a transmissão do PGDAS-D em produção. Portão: um mês inteiro das empresas do piloto escriturado no sistema.
+3. **Fase 2, regime normal e SPED.** Entregue entre 06 e 07/11/2026 (0.8 a 0.17): ICMS, IPI, ST e DIFAL, EFD ICMS/IPI, EFD-Contribuições, ECD, ECF, Reinf, DeSTDA, patrimônio e CIAP; EFD ICMS/IPI, EFD-Contribuições e ECF validadas nos programas oficiais. Falta o PIS/COFINS não cumulativo.
+4. **Fase 3, folha e eSocial.** Entregue entre 07 e 09/11/2026 (0.18 a 0.45), com o Lucro Real, o e-Lalur e o e-Lacs: eventos aceitos na produção restrita e totalizadores conferidos com a folha. Portão: a folha de uma empresa do piloto fechada no sistema, com movimento real.
+5. **Fase 4, legal, IA e carteira completa.** Entregue em 09 e 10/11/2026 (0.46 a 0.56): departamento legal, caixa postal federal, IA, app do cliente, BI, NPS e o roteiro de implantação do escritório piloto. Portão em andamento: o piloto operando a carteira inteira.
+6. **Fase 5, reforma plena e ecossistema.** Começou na 0.58.0 com a reforma de 2027 no regime regular e o simulador do Simples híbrido. Falta a alíquota definitiva da CBS, o split payment e a API pública. Portão: competência 01/2027 em diante apurada sem retrabalho.
 
-## 11. Stack
+## 12. Stack
 
-Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker na VPS atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id do escritório, toda ação grava auditoria, nada se apaga.
+Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker numa VM ARM na Oracle Cloud em São Paulo, atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id do escritório, toda ação grava auditoria, nada se apaga.
 
-## 12. Código
+## 13. Código
 
 O repositório é privado: o produto é comercial e vai operar dados fiscais, contábeis e trabalhistas de terceiros. Pode ser apresentado em entrevista ou avaliação acadêmica com o escritório de demonstração. A definição do produto, o relatório de mercado e as notas de pesquisa existem no repositório e seguem este case.

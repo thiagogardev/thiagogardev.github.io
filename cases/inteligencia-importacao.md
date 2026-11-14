@@ -120,7 +120,7 @@ Uma decisão de produto saiu de uma conversa com o dono: **o preço de venda flu
 ## 9. Próximos passos
 
 1. **Uso medido:** 2 a 4 semanas de missões avaliadas nas linhas do grupo, e listas mensais de mais dois ou três NCMs escolhidos pelo ranking.
-2. **Proposta com números:** levar custo, teto e margem para a proposta de substituição da importação, com redação por LLM.
+2. **Proposta com números (entregue em 10/11/2026):** custo de importar, teto e margem na proposta de substituição da importação. O e-mail é redigido pelo Claude só com os fatos liberados ao cliente; o teto, a margem e o dado licenciado nunca vão ao modelo, e cada número do texto é conferido contra os fatos, a cerca de US$ 0,03 por redação.
 3. **Alerta ativo:** avisar quando aparecer um sinal novo depois da carga mensal.
 4. **Inteligência de compra:** preço por kg por exportador, para a importadora negociar e escolher fornecedor.
 5. **Ciclo fechado:** registrar o desfecho comercial e recalibrar a nota com ele.
@@ -128,7 +128,7 @@ Uma decisão de produto saiu de uma conversa com o dono: **o preço de venda flu
 
 ## 10. Stack e código
 
-- **Sistema:** Next.js 16, React 19, Drizzle, PostgreSQL (PGlite no desenvolvimento), node-cron, Docker, servidor na AWS em São Paulo.
+- **Sistema:** Next.js 16, React 19, Drizzle, PostgreSQL (PGlite no desenvolvimento), node-cron, Docker, VM ARM na Oracle Cloud em São Paulo desde 12/11/2026 (antes, AWS em São Paulo e, na origem, Hetzner); API do Claude na redação da proposta.
 - **Fontes oficiais:** Comex Stat (MDIC), TEC e anexos da Res. Gecex 272/2021 (MDIC/Camex), TIPI (Receita Federal), PTAX (Banco Central), base aberta do CNPJ e habilitados no Siscomex (Receita Federal).
 - **Código:** o sistema é privado, e o código pode ser mostrado em entrevista ou avaliação com dados sintéticos. A parte de dado aberto é pública, com licença MIT: [thiagogardev/custo-importacao-br](https://github.com/thiagogardev/custo-importacao-br).
 - **Ver também:** [case do Genesis](genesis.md), o sistema de prospecção do qual este é um módulo, e [case ICMS ST](icms-st.md), da mesma família de dado aberto fiscal.

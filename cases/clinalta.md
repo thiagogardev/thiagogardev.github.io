@@ -1,6 +1,6 @@
 # Clinalta: do mercado ao produto em um dia
 
-**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código e verificação · **Estado:** Fase 0 construída, em evolução
+**Período:** novembro de 2026 até hoje · **Papel:** idealização, direção da pesquisa, arquitetura, código e verificação · **Estado:** no ar em app.clinalta.com.br desde 05/11/2026; Fase 1 (prontuário) em construção
 
 > Resumo em uma frase: em um único dia de trabalho, saí de uma pergunta ("dá para construir um sistema de gestão para clínicas melhor que os do mercado?") para um produto com nome, domínios registrados, pesquisa de mercado com fontes datadas, definição de produto e a primeira fase do sistema funcionando, testada e versionada.
 
@@ -108,9 +108,40 @@ A pesquisa levantou 22 normas e as transformou em requisitos de software, classi
 | Res. CFM 1.821/2007 e Lei 13.787/2018 | Guarda do prontuário por 20 anos | Nada se apaga: pacientes e agendamentos são inativados ou cancelados, nunca excluídos |
 | Res. CFM 2.454/2026 | Paciente informado e podendo recusar IA; uso registrado | Consentimento "gravação e IA" já no catálogo, para a Fase 3 |
 
-## 6. Números
+## 6. Depois do primeiro dia: no ar e a Fase 1 em andamento
 
-Tudo em 4 de novembro de 2026, entre a primeira pergunta e o commit inicial.
+A Fase 0 entrou em produção no dia seguinte, e a Fase 1 começou pelo que mais pesa para o médico: o prontuário. Cada entrega saiu com teste, nota datada na ajuda e backup antes da troca.
+
+| Data | Entrega |
+|---|---|
+| 04/11/2026 | CID-10 embutida: a tabela oficial do DATASUS, com 14.233 códigos, busca por nome ou por código, com ou sem ponto |
+| 05/11/2026 | No ar em app.clinalta.com.br, com domínio, certificado, backup diário e restauração testada (dump restaurado num banco novo, com as mesmas tabelas e os 14.233 códigos da CID-10). No mesmo dia: fila de espera da recepção, tarefas com prazo e responsável e atalhos de teclado |
+| 09/11/2026 | Marca depositada no INPI, classe 42 |
+| 12/11/2026 | Servidor no Brasil: o sistema passou a rodar numa VM na Oracle Cloud em São Paulo. Ajuda por tela (F1 abre a explicação da tela atual, com busca no manual) |
+| 12/11/2026 | Prescrição pela Memed integrada ao atendimento, em homologação (detalhes abaixo) |
+| 13/11/2026 | Prontuário com linha do tempo única do paciente: evoluções, receitas, anexos e atendimentos, com filtro por tipo |
+| 13/11/2026 | Evolução por modelo: 7 modelos (SOAP, texto livre e cinco especialidades), com CID-10; o rascunho se salva sozinho e fica guardado no aparelho se a internet cair |
+| 13/11/2026 | Anexos no prontuário (PDF e imagem, até 10 MB), incluídos no backup diário; enviado por engano fica marcado, nunca apagado |
+| 13/11/2026 | Senha provisória: o administrador não digita mais a senha de ninguém; o sistema sorteia uma senha válida por 7 dias e exige a troca no primeiro acesso |
+| 13/11/2026 | Ajuda revista tela por tela contra o sistema, com a seção "Quando der problema" em cada tópico, para o suporte |
+
+### Evolução imutável em três camadas
+
+O prontuário tem guarda legal de 20 anos e não pode ser reescrito em silêncio. A evolução finalizada não se edita: correção é uma versão nova com motivo, e a anterior continua visível. A proteção tem três camadas independentes:
+
+1. **Aplicação.** Não existe tela nem ação para alterar ou apagar uma versão.
+2. **Hash SHA-256 encadeado.** Cada versão grava o hash do seu conteúdo canônico e o hash da versão anterior. Ao abrir a evolução, o sistema recalcula a cadeia e aponta a primeira versão que não confere.
+3. **Banco de dados.** Um gatilho no PostgreSQL recusa qualquer UPDATE ou DELETE na tabela de versões, mesmo para quem acessa o banco direto.
+
+A exportação leva todas as versões com o hash, para que a clínica possa conferir fora do sistema.
+
+### Prescrição pela Memed, dita com honestidade
+
+O médico clica em Prescrever no atendimento, a Memed abre com o paciente preenchido (inclusive o endereço que a Anvisa exige junto com o CPF), e a receita emitida fica gravada no atendimento e na linha do tempo; receita excluída na Memed fica marcada, nunca some. A integração roda no ambiente de homologação da Memed: **as receitas ainda não têm valor legal**, e só terão quando as chaves de produção forem liberadas. Integrar em vez de construir resolve desde já a receita de controlados, que a Memed cobre; a prescrição própria, com numeração SNCR, ficou para a Fase 3.
+
+## 7. Números
+
+No primeiro dia, 4 de novembro de 2026, entre a primeira pergunta e o commit inicial:
 
 | Medida | Valor |
 |---|---|
@@ -126,29 +157,43 @@ Tudo em 4 de novembro de 2026, entre a primeira pergunta e o commit inicial.
 | Cliques para agendar | 3, verificado no navegador |
 | Nomes testados no Registro.br | 150, 33 livres |
 
-O que não está feito, dito com a mesma clareza: a Fase 0 ainda não foi publicada na VPS, a restauração de backup não foi testada, o pedido de marca no INPI não foi protocolado e o CPF ainda fica em claro no banco (a cifra existe e protege, por enquanto, só o segredo da verificação em duas etapas).
+Dez dias depois, em 14 de novembro de 2026, recontado no repositório:
 
-## 7. Lições
+| Medida | Valor |
+|---|---|
+| Commits | 24 |
+| Arquivos versionados | 211 |
+| Linhas de TypeScript | 16.421 |
+| Tabelas no banco | 24 |
+| Telas e rotas | 44 |
+| Asserções automatizadas | 377, em 10 suítes |
+| Modelos de evolução | 7 |
+| Códigos da CID-10 embutidos | 14.233 |
+
+O que não está feito, dito com a mesma clareza: a prescrição pela Memed ainda está em homologação e as receitas não têm valor legal até a liberação das chaves de produção; faltam a assinatura digital da evolução e os documentos assinados com certificado ICP-Brasil (atestado, pedido de exame, encaminhamento), o financeiro com Pix, o recibo Receita Saúde e o WhatsApp da clínica; e o CPF ainda fica em claro no banco (a cifra existe e protege, por enquanto, só o segredo da verificação em duas etapas).
+
+## 8. Lições
 
 - **Fuso horário é requisito, não detalhe.** O servidor de produção roda em UTC; "hoje" e "08:30" mudam de dia se calculados no fuso do processo. Uma biblioteca de datas calcula tudo em São Paulo, com teste que prova que 22:30 em SP ainda é o mesmo dia.
 - **Fonte bloqueada vira lacuna declarada.** Sites de vários fornecedores recusaram o acesso automatizado. Os preços deles ficaram marcados como "fonte terciária, com data" e não como oficiais.
 - **Nome genérico é dívida.** O primeiro impulso foi um nome de categoria, que mistura idiomas e dificilmente passaria no INPI. A escolha final saiu de critérios (curto, pronunciável, que caiba num ícone, com .com.br livre), 150 candidatos verificados automaticamente no Registro.br e um racional, não um gosto.
 - **Pesquisa com data evita decisões caras.** Duas normas que eu daria como certas estavam erradas na minha cabeça; a pesquisa corrigiu antes do código.
+- **Integrar antes de construir, e dizer o estado real.** A prescrição pela Memed resolveu os controlados sem esperar a prescrição própria, mas a integração em homologação não tem valor legal. O case, a ajuda e o roteiro dizem isso com as mesmas palavras.
 
-## 8. Próximos passos
+## 9. Próximos passos
 
 Cinco fases, cada uma com critério de pronto verificável e sem datas prometidas. Cada fase só começa com a anterior em uso real.
 
-1. **Fase 0, fundação (construída).** Falta publicar na VPS com domínio, testar a restauração do backup e protocolar a marca. Portão: uma clínica fictícia com dois médicos e uma secretária agenda, cadastra e vê a auditoria em produção.
-2. **Fase 1, MVP para consultório particular.** Prontuário com linha do tempo, SOAP e modelos por especialidade; CID-10 com busca; versões imutáveis com hash encadeado; documentos assinados com certificado digital e validados no ITI; financeiro simples com Pix; recibo Receita Saúde por recebimento; WhatsApp oficial; leitura sem rede. Portão: um consultório real usa por 30 dias sem perder nenhum atendimento.
+1. **Fase 0, fundação (no ar desde 05/11/2026).** Publicada com domínio, backup e restauração testada; marca depositada no INPI. Portão cumprido: a clínica de demonstração agenda, cadastra e vê a auditoria em produção.
+2. **Fase 1, MVP para consultório particular (em construção).** Feito: prontuário com linha do tempo, SOAP e modelos por especialidade, CID-10 com busca, versões imutáveis com hash encadeado, anexos e prescrição pela Memed em homologação. Falta: documentos assinados com certificado digital e validados no ITI, receitas com valor legal (chaves de produção da Memed), financeiro simples com Pix, recibo Receita Saúde por recebimento, WhatsApp oficial e leitura completa sem rede. Portão: um consultório real usa por 30 dias sem perder nenhum atendimento.
 3. **Fase 2, clínicas e convênios.** Guias TISS validadas, lotes, glosas e recurso; NFS-e nacional; DMED; repasse médico; portal do paciente; recall e NPS. Portão: um mês fechado numa clínica com convênio, lote aceito pela operadora e repasse conferido pelo contador.
 4. **Fase 3, IA, teleconsulta, BI e estoque.** Transcrição ambiente com termo e registro; teleconsulta; prescrição própria com numeração SNCR; painéis de falta, glosa e DRE. Portão: médico piloto aprova o rascunho de IA em 20 consultas com edição mínima.
 5. **Fase 4, certificação e ecossistema.** Preparação SBIS, RNDS em FHIR, API pública, agente de WhatsApp, CID-11.
 
-## 9. Stack
+## 10. Stack
 
-Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker na VPS atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id da clínica, toda ação grava auditoria, nada se apaga.
+Next.js 16 com server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite em desenvolvimento e PostgreSQL em produção · Docker numa VM ARM na Oracle Cloud em São Paulo, atrás do Caddy. Convenções herdadas do grupo: dinheiro em centavos, datas sempre no fuso de São Paulo, toda tabela com o id da clínica, toda ação grava auditoria, nada se apaga.
 
-## 10. Código
+## 11. Código
 
 O repositório é privado: o produto é comercial e lida com dados de saúde. Pode ser apresentado em entrevista ou avaliação acadêmica com a clínica de demonstração. Documentos de definição do produto e de arquitetura existem no repositório e seguem este case.

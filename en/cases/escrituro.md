@@ -1,14 +1,14 @@
 ---
 lang: en
 title: "Escrituro: from market research to a product in production in two days"
-description: Case study of Escrituro, a system for accounting firms built to match and surpass Contmatic Phoenix. Research with dated sources, a product definition reviewed by an independent agent and a foundation phase deployed to production, all in two days with AI agents under human direction.
+description: Case study of Escrituro, a system for accounting firms built to match and surpass Contmatic Phoenix. Research with dated sources, a product definition reviewed by an independent agent and a foundation phase deployed to production, all in two days with AI agents under human direction, and version 0.65.0, with SPED, payroll, eSocial and AI, ten days later.
 ---
 
 # Escrituro: from market research to a product in production in two days
 
-**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code, verification and deployment · **Status:** Phase 0 in production; Phase 1 under construction, accounting module published
+**Period:** November 2026 to date · **Role:** concept, research direction, architecture, code, verification and deployment · **Status:** version 0.65.0 live (2026-11-14), Phases 0 to 3 shipped, pilot in the author's own group
 
-> One-sentence summary: in two working days I went from a question ("can I build a system for accounting firms as good as or better than Contmatic Phoenix?") to a product with a name, a registered domain, market research with 659 dated sources, a product definition reviewed by an independent agent and the first phase of the system running in production, with domain, certificate and backups. On the same day, the accounting module of Phase 1 went live, built on an inventory of 233 functions from the market leaders.
+> One-sentence summary: in two working days I went from a question ("can I build a system for accounting firms as good as or better than Contmatic Phoenix?") to a product with a name, a registered domain, market research with 659 dated sources, a product definition reviewed by an independent agent and the first phase of the system running in production, with domain, certificate and backups. On the same day, the accounting module of Phase 1 went live, built on an inventory of 233 functions from the market leaders. Ten days later the system reached version 0.65.0, with SPED, Presumed and Actual Profit, payroll and eSocial, corporate department, AI and the 2027 tax reform.
 
 ## 1. Context and problem
 
@@ -91,7 +91,7 @@ The foundation: what every later phase will use, and what a firm can already ope
 
 ### Screens of the demo firm
 
-The data below comes from the demo firm, with the group's companies registered by the seed script.
+The data below comes from the demo firm. The active company's name and tax ID were covered in the screenshots.
 
 ![Portfolio dashboard: period obligations by status, next seven days and load per analyst](../../assets/escrituro/painel.png)
 
@@ -169,11 +169,36 @@ Escrituro has a manual with more than two hundred topics, and a usage question (
 
 Why keyword search and not embeddings: the manual uses the same vocabulary as the screens, and users ask with the names they see on screen. In that setting stemmed BM25 performs well with no cost and no dependency. Moving to hybrid search (keywords plus embeddings, with a reranker) depends on measurement: if the "No" answers show questions the search missed, a test set with the right topic for each question is built and the hit rate in the top 5 is compared before changing anything.
 
-Besides Ask the Help, Escrituro's AI suggests the tax classification of invoice items and the account for bank reconciliation, using as examples the rules the firm itself has already approved, and explains in plain language the errors returned by eSocial and EFD-Reinf. In every case the AI only suggests: the analyst saves, and every decision is logged.
+Besides Ask the Help, Escrituro's AI suggests the tax classification of invoice items and the account for bank reconciliation, using as examples the rules the firm itself has already approved, and explains in plain language the errors returned by eSocial and EFD-Reinf. Before any call, tax IDs, e-mails, phone numbers and Pix keys are pseudonymized, and the answer is rehydrated on the server. In every case the AI only suggests: the analyst saves, and every decision is logged.
 
-## 8. Numbers
+## 8. From foundation to 0.65 in about ten days
 
-All between 4 and 5 November 2026, from the first question to deployment.
+Between 5 and 14 November 2026, Escrituro went from Phase 0 to version 0.65.0, in 97 commits. The method of the first two days became a routine:
+
+- **Daily, versioned deliveries.** Every version has a number, a dated note in the help's release notes and its own commit; production receives the whole version, never pieces.
+- **A backup before every version.** A dump of the production database before every switch, on top of the hourly backup, so any version can be rolled back.
+- **Tests per suite.** Every module ships with its own suite (payroll, eSocial, Reinf, ECD, imports and so on), and all of them run before deployment: from 4 suites in Phase 0 to 65.
+- **Validation against the official source.** SPED files checked in the tax authority's validators (EFD ICMS/IPI in PVA; EFD-Contribuições and ECF in PGE), and eSocial and EFD-Reinf events sent to the government's restricted production environment, with receipts and totals matching the payroll to the cent.
+- **Written rules where the law leaves doubt.** Whatever is unclear becomes an "adopted rule", documented in the help and taken to an accountant, instead of a silent assumption.
+
+| Area | Live in 0.65.0 |
+|---|---|
+| Bookkeeping | Chart of accounts, entries, OFX reconciliation, trial balance, income statement, balance sheet, financial statements (cash flow, changes in equity, notes), vacation and 13th-salary provisions, fixed assets and ICMS credit on fixed assets (CIAP) |
+| SPED and returns | ECD, ECF, EFD ICMS/IPI, EFD-Contribuições, EFD-Reinf, DeSTDA and DEFIS |
+| Tax regimes | Simples Nacional, Presumed Profit and Actual Profit with e-Lalur and e-Lacs; PIS/COFINS only under the cumulative regime |
+| Payroll | Monthly calculation, vacations, 13th salary, terminations, leaves, occupational health and safety, collective wage adjustments and labor lawsuits; eSocial validated in restricted production; DCTFWeb, FGTS Digital and bank payments through CNAB 240 |
+| Corporate and federal | Corporate department through Redesim; tax clearance certificates and the federal (e-CAC) and state (DTE) mailboxes through Integra Contador, with a daily monitor |
+| AI | Classification of invoice items and reconciliation from the rules already approved, explanation of eSocial and Reinf errors and Ask the Help, with tax IDs, e-mails, phone numbers and Pix keys pseudonymized before reaching the model |
+| Client relationship | Fees, client portal and app (PWA with the firm's brand), client dashboard, firm BI with targets per analyst and NPS survey |
+| 2027 tax reform | CBS and IBS under the standard regime with transition credits, and a simulator for the hybrid Simples |
+| ICMS ST and foreign trade | ICMS tax substitution lookup for all 27 states; checking of import invoices, import process with exchange rates and an import cost simulator |
+| Tax routine | NF-e capture by NSU and by access key, weekly tax bulletin and single-phase PIS/COFINS in the Simples (0.65.0, 2026-11-14) |
+
+The pilot is the author's own group, starting with period 11/2026: it runs in parallel with the current bookkeeping, without filing anything through Escrituro until the first months are checked.
+
+## 9. Numbers
+
+Between 4 and 5 November 2026, from the first question to deployment:
 
 | Measure | Value |
 |---|---|
@@ -204,31 +229,45 @@ After the accounting module, on the same 5 November:
 | Automated assertions | 212, in 5 suites |
 | Agents building screens in parallel | 4 |
 
-What is not done, stated just as clearly: backup restoration in production has not been tested yet, the trademark application has not been filed, the A1 certificate was only tested without a real file, the EFD ICMS/IPI and ISS deadlines use São Paulo's, the catalog has no state-level returns, the tax authority's reference codes are blank and, from Phase 1, document capture, PGDAS-D through Integra Contador, fees and the client portal are still missing.
+At version 0.65.0, on 14 November 2026, recounted in the repository:
 
-## 9. Lessons
+| Measure | Value |
+|---|---|
+| Commits | 97 |
+| Versioned files | 1,030 |
+| Lines of TypeScript | 121,911 |
+| Database tables | 159 |
+| Migrations | 59 |
+| Screens and routes | 251 |
+| Automated assertions | 3,635, in 65 suites |
+| Manual topics | more than 200 |
+
+What is not done, stated just as clearly: filing the PGDAS-D in production is blocked until one parameter of Serpro's activity table is confirmed (the demo environment only accepts the official example); non-cumulative PIS/COFINS under Actual Profit is not assessed, and EFD-Contribuições is generated only under the cumulative regime; eSocial and EFD-Reinf were validated in restricted production but have no real activity in production yet; the CNAB 240 file still has to be certified with a bank; the 2027 CBS rate is a provisional parameter until the Senate resolution; and the pilot does not file anything through Escrituro yet.
+
+## 10. Lessons
 
 - **Measuring beats describing.** The visual-standard agent read the colors from Phoenix screenshots pixel by pixel. The tokens came out exact, and the first screen already looked like the original instead of "inspired" by it.
 - **Independent review before code.** Thirty-one points fixed in an 11-thousand-word definition, by an agent that did not write it. Cheap compared to discovering in code that the AI quota would cost more than the subscription.
 - **External dates do not wait for the roadmap.** The definition tied completion criteria to January 2027. The review untied them: layout 021 and the hybrid Simples simulator move to Phase 2, and period 01/2027 can be redone later from the files.
 - **Business days are a business rule.** PGDAS-D postpones, FGTS Digital brings forward, and bank holidays count. The deadline engine is a pure function, tested against the real 2026 calendar.
+- **The official validator is the final test.** The first run of the Actual Profit ECF in PGE returned dozens of errors; the second, only environment ones. One error in another return came from a long dash copied from the official descriptions, which the validator itself rejects.
 - **The right domain is .com.br.** escrituro.com had been with a speculator since April. For a Brazilian product, the .com.br registered directly at the national registry is enough, after unlinking the owner's tax ID from the previous provider.
 
-## 10. Next steps
+## 11. Roadmap: shipped and still missing
 
-Six phases, each with a verifiable completion criterion and no promised dates. Each phase only starts with the previous one in real use.
+The six phases of the definition, with what has shipped and what is missing. The gates stay the same: they only count with real use.
 
-1. **Phase 0, foundation (live).** Still to do: test backup restoration in production, file the trademark and validate the five screens with accountants. Gate: a demo firm with the group's companies, a calendar generated by regime and an analyst marking obligations with receipts in production.
-2. **Phase 1, MVP for bookkeeping and the Simples tax routine (accounting module published).** Chart of accounts with reference mapping, entries, reconciliation, trial balance and closing, reusing the group's management accounting; capture of NF-e and CT-e by NSU with acknowledgment; national service invoice; PGDAS-D, DAS and DEFIS through Integra Contador; informational IBS and CBS assessment; fees and client portal. Gate: a full month of the group's companies booked in the system and a small external firm in pilot.
-3. **Phase 2, standard regime and SPED.** Assessment of ICMS, tax substitution, DIFAL, IPI, PIS and COFINS; EFD ICMS/IPI 020 and 021 by validity; EFD-Contribuições; Reinf; DCTFWeb with MIT; ECD with signatories; fixed assets with dual depreciation. Gate: EFD and ECD of one group company validated in the official programs and filed.
-4. **Phase 3, payroll and eSocial.** S-1.3 events, monthly calculation, vacations, 13th salary, terminations, FGTS Digital and DCTFWeb end to end. Gate: one group company's payroll closed in the system with totals checked.
-5. **Phase 4, corporate records, AI and full portfolio.** Corporate department with Redesim, AI assistant with a quota per firm, employee app. Gate: pilot firm operating its whole portfolio.
-6. **Phase 5, full tax reform and ecosystem.** Real CBS, hybrid Simples, split payment, public API. Gate: periods from 01/2027 onward assessed without rework.
+1. **Phase 0, foundation.** Live since 2026-11-05; trademark filed with INPI on 2026-11-09, class 42.
+2. **Phase 1, bookkeeping and the Simples tax routine.** Shipped on 5 and 6 November 2026 (0.2 to 0.7): bookkeeping, NF-e and CT-e capture, national service invoice, Simples assessment and DEFIS, fees and client portal. Missing: filing the PGDAS-D in production. Gate: a full month of the pilot companies booked in the system.
+3. **Phase 2, standard regime and SPED.** Shipped from 6 to 7 November 2026 (0.8 to 0.17): ICMS, IPI, tax substitution and DIFAL, EFD ICMS/IPI, EFD-Contribuições, ECD, ECF, Reinf, DeSTDA, fixed assets and CIAP; EFD ICMS/IPI, EFD-Contribuições and ECF validated in the official programs. Missing: non-cumulative PIS/COFINS.
+4. **Phase 3, payroll and eSocial.** Shipped from 7 to 9 November 2026 (0.18 to 0.45), together with Actual Profit, e-Lalur and e-Lacs: events accepted in restricted production and totals checked against the payroll. Gate: the payroll of one pilot company closed in the system with real activity.
+5. **Phase 4, corporate records, AI and full portfolio.** Shipped on 9 and 10 November 2026 (0.46 to 0.56): corporate department, federal mailbox, AI, client app, BI, NPS and the onboarding script for the pilot firm. Gate in progress: the pilot operating its whole portfolio.
+6. **Phase 5, full tax reform and ecosystem.** Started in 0.58.0 with the 2027 reform under the standard regime and the hybrid Simples simulator. Missing: the final CBS rate, split payment and the public API. Gate: periods from 01/2027 onward assessed without rework.
 
-## 11. Stack
+## 12. Stack
 
-Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on the VPS behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the firm id, every action writes to the audit trail, nothing is deleted.
+Next.js 16 with server actions · React 19 · TypeScript · Tailwind 4 · Drizzle ORM · PGlite in development and PostgreSQL in production · Docker on an ARM VM on Oracle Cloud in São Paulo, behind Caddy. Conventions inherited from the group: money in cents, dates always in São Paulo time, every table with the firm id, every action writes to the audit trail, nothing is deleted.
 
-## 12. Code
+## 13. Code
 
 The repository is private: the product is commercial and will process third-party tax, accounting and payroll data. It can be shown in interviews or academic evaluation with the demo firm. The product definition, the market report and the research notes exist in the repository and follow this case.

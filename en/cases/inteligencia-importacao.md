@@ -121,7 +121,7 @@ A product decision came from a conversation with the owner: **the selling price 
 ## 9. Next steps
 
 1. **Measured use:** 2 to 4 weeks of evaluated missions on the group's product lines, plus monthly lists for two or three more codes chosen by the ranking.
-2. **Proposal with numbers:** bring cost, ceiling and margin into the import-substitution proposal, written by an LLM.
+2. **Proposal with numbers (shipped on 2026-11-10):** landed cost, ceiling and margin in the import-substitution proposal. The e-mail is drafted by Claude using only the facts cleared for the customer; the ceiling, the margin and the licensed data never reach the model, and every number in the text is checked against the facts, at about US$ 0.03 per draft.
 3. **Active alerts:** notify when a new signal appears after the monthly load.
 4. **Purchasing intelligence:** price per kg by exporter, for the importer to negotiate and choose suppliers.
 5. **Closed loop:** record the commercial outcome and recalibrate the score with it.
@@ -129,7 +129,7 @@ A product decision came from a conversation with the owner: **the selling price 
 
 ## 10. Stack and code
 
-- **System:** Next.js 16, React 19, Drizzle, PostgreSQL (PGlite in development), node-cron, Docker, server on AWS São Paulo.
+- **System:** Next.js 16, React 19, Drizzle, PostgreSQL (PGlite in development), node-cron, Docker, ARM VM on Oracle Cloud in São Paulo since 2026-11-12 (before that, AWS in São Paulo and, originally, Hetzner); Claude API for drafting the proposal.
 - **Official sources:** Comex Stat (Ministry of Development and Trade), Common External Tariff and Gecex 272/2021 annexes, IPI table (Federal Revenue), PTAX (Central Bank), open company registry and Siscomex-enabled importers (Federal Revenue).
 - **Code:** the system is private, and the code can be shown in interviews or academic review with synthetic data. The open-data part is public under MIT: [thiagogardev/custo-importacao-br](https://github.com/thiagogardev/custo-importacao-br).
 - **See also:** the [Genesis case](genesis.md), the prospecting system this is a module of, and the [ICMS ST case](icms-st.md), from the same open fiscal data family.
