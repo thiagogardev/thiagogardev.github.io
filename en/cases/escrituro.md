@@ -192,7 +192,7 @@ Between 5 and 14 November 2026, Escrituro went from Phase 0 to version 0.65.0, i
 | Client relationship | Fees, client portal and app (PWA with the firm's brand), client dashboard, firm BI with targets per analyst and NPS survey |
 | 2027 tax reform | CBS and IBS under the standard regime with transition credits, and a simulator for the hybrid Simples |
 | ICMS ST and foreign trade | ICMS tax substitution lookup for all 27 states; checking of import invoices, import process with exchange rates and an import cost simulator |
-| Tax routine | NF-e capture by NSU and by access key, weekly tax bulletin and single-phase PIS/COFINS in the Simples (0.65.0, 2026-11-14; see the [tax engine case study](monofasico.md)) |
+| Tax routine | NF-e capture by NSU and by access key, weekly tax bulletin and single-stage (monophasic) PIS/COFINS in the Simples (0.65.0, 2026-11-14; see the [tax engine case study](monofasico.md)) |
 
 The pilot is the author's own group, starting with period 11/2026: it runs in parallel with the current bookkeeping, without filing anything through Escrituro until the first months are checked.
 
