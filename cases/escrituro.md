@@ -191,7 +191,7 @@ Entre 5 e 14 de novembro de 2026, o Escrituro foi da Fase 0 à versão 0.65.0, e
 | Relacionamento | Honorários, portal e app do cliente (PWA com a marca do escritório), painel do cliente, BI do escritório com metas por analista e pesquisa NPS |
 | Reforma 2027 | CBS e IBS no regime regular com créditos de transição e simulador do Simples híbrido |
 | ICMS ST e comércio exterior | Consulta de ICMS ST dos 27 estados; conferência das notas de importação, processo de importação com câmbio e simulador de custo de importação |
-| Rotina fiscal | Captura de NF-e por NSU e pela chave de acesso, boletim fiscal semanal e PIS/COFINS monofásico no Simples (0.65.0, 14/11/2026) |
+| Rotina fiscal | Captura de NF-e por NSU e pela chave de acesso, boletim fiscal semanal e PIS/COFINS monofásico no Simples (0.65.0, 14/11/2026; ver o [case do motor tributário](monofasico.md)) |
 
 O piloto é o próprio grupo do autor, desde a competência 11/2026: roda em paralelo à contabilidade atual, sem transmitir declarações pelo Escrituro até a conferência dos primeiros meses.
 
