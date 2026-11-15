@@ -54,7 +54,7 @@ flowchart LR
 
 ## 4. Erros achados com dados reais
 
-A tabela passou nos testes escritos a partir da lei. Os dois erros abaixo só apareceram quando o motor rodou sobre as notas reais do piloto. Cada um virou teste de regressão.
+A tabela passou nos testes escritos a partir da lei. Os dois erros abaixo só apareceram quando o motor rodou sobre as notas reais do piloto, no ambiente de desenvolvimento e antes da publicação: nenhum chegou à produção. Cada um virou teste de regressão.
 
 **8431.43.90: parte de perfuratriz não é parte de escavadeira.** O item 2 do Anexo II alcança partes de máquinas da posição 84.29 (escavadeiras, carregadeiras, tratores de esteira), e essas partes ficam na 84.31. Mas a 84.31 também reúne partes de outras máquinas. O 8431.43.90 apareceu como candidato do Anexo II, e é parte de máquina de sondagem e perfuração (8430.41 e 8430.49), que a lei não alcança. A correção foi ler a estrutura da posição: só a 8431.49 pode ser parte de máquina da 84.29; a 8431.41 e a 8431.42 já estão no Anexo I; o resto da 84.31 fica fora.
 

@@ -55,7 +55,7 @@ flowchart LR
 
 ## 4. Bugs found with real data
 
-The table passed the tests written from the law. The two bugs below only showed up when the engine ran over the pilot's real invoices. Each one became a regression test.
+The table passed the tests written from the law. The two bugs below only showed up when the engine ran over the pilot's real invoices, in the development environment and before release: neither reached production. Each one became a regression test.
 
 **8431.43.90: a drilling rig part is not an excavator part.** Item 2 of Annex II reaches parts of machines of heading 84.29 (excavators, loaders, crawler tractors), and those parts sit in 84.31. But 84.31 also groups parts of other machines. Code 8431.43.90 came up as an Annex II candidate, and it covers parts of boring and drilling machinery (8430.41 and 8430.49), which the law does not reach. The fix was to read the structure of the heading: only 8431.49 can be a part of an 84.29 machine; 8431.41 and 8431.42 are already in Annex I; the rest of 84.31 is out.
 
