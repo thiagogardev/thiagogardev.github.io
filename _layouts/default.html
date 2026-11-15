@@ -54,7 +54,7 @@
     }
     header.site .wrap {
       max-width: var(--max); margin: 0 auto; padding: 14px 20px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative;
     }
     .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 600; letter-spacing: -0.01em; }
     .brand svg { width: 30px; height: 30px; flex: none; }
@@ -68,6 +68,24 @@
     nav a.lang { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13px; color: var(--fg); }
     nav a.lang:hover { background: var(--bg-soft); }
 
+    .menu { position: relative; }
+    .menu summary { list-style: none; cursor: pointer; color: var(--fg-soft); font-size: 15px; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+    .menu summary::-webkit-details-marker { display: none; }
+    .menu summary::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .15s; }
+    .menu[open] summary::after { transform: rotate(-135deg) translateY(-1px); }
+    .menu summary:hover, .menu[open] summary, .menu summary.atual { color: var(--fg); }
+    .menu summary:focus-visible, nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+    .menu .painel { position: absolute; right: 0; top: calc(100% + 12px); z-index: 20; width: min(520px, calc(100vw - 32px)); display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; padding: 18px 20px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(15,23,42,.12); }
+    .menu .grupo { display: flex; flex-direction: column; gap: 6px; }
+    .menu .grupo span { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-soft); }
+    .menu .grupo a { white-space: normal; color: var(--fg); font-size: 15px; }
+    .menu .grupo a:hover { color: var(--accent); }
+    .menu .grupo a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+    @media (max-width: 600px) {
+      .menu summary { font-size: 13px; }
+      .menu { position: static; }
+      .menu .painel { left: 16px; right: 16px; top: calc(100% - 4px); width: auto; grid-template-columns: 1fr; gap: 14px; max-height: calc(100vh - 140px); overflow-y: auto; }
+    }
     main { max-width: var(--max); margin: 0 auto; padding: 40px 20px 80px; }
 
     h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 18px; }
@@ -120,6 +138,8 @@
       nav a { font-size: 13px; }
       .brand { font-size: 15px; }
       .brand span small { display: none; }
+      header.site .wrap { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 16px; }
+      nav { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -133,28 +153,56 @@
       <nav>
         {% if en %}
         <a href="{{ '/en/#projects' | relative_url }}">Projects</a>
-        <a href="{{ '/en/cases/genesis.html' | relative_url }}">Genesis case</a>
-        <a href="{{ '/en/cases/clinalta.html' | relative_url }}">Clinalta case</a>
-        <a href="{{ '/en/cases/escrituro.html' | relative_url }}">Escrituro case</a>
-        <a href="{{ '/en/cases/icms-st.html' | relative_url }}">ICMS ST case</a>
-        <a href="{{ '/en/cases/inteligencia-importacao.html' | relative_url }}">Import case</a>
-        <a href="{{ '/en/cases/central-atendimento.html' | relative_url }}">Support Center case</a>
-        <a href="{{ '/en/cases/robo-acoplin.html' | relative_url }}">Sales bot case</a>
-        <a href="{{ '/en/cases/monofasico.html' | relative_url }}">Tax engine case</a>
+        <details class="menu">
+          <summary{% if page.url contains '/cases/' %} class="atual"{% endif %}>Case studies</summary>
+          <div class="painel">
+            <div class="grupo"><span>Products</span>
+              <a href="{{ '/en/cases/escrituro.html' | relative_url }}"{% if page.url == '/en/cases/escrituro.html' %} aria-current="page"{% endif %}>Escrituro</a>
+              <a href="{{ '/en/cases/clinalta.html' | relative_url }}"{% if page.url == '/en/cases/clinalta.html' %} aria-current="page"{% endif %}>Clinalta</a>
+            </div>
+            <div class="grupo"><span>AI and automation</span>
+              <a href="{{ '/en/cases/genesis.html' | relative_url }}"{% if page.url == '/en/cases/genesis.html' %} aria-current="page"{% endif %}>Genesis: prospecting agents</a>
+              <a href="{{ '/en/cases/central-atendimento.html' | relative_url }}"{% if page.url == '/en/cases/central-atendimento.html' %} aria-current="page"{% endif %}>Support Center</a>
+              <a href="{{ '/en/cases/robo-acoplin.html' | relative_url }}"{% if page.url == '/en/cases/robo-acoplin.html' %} aria-current="page"{% endif %}>Acoplin sales bot</a>
+            </div>
+            <div class="grupo"><span>Tax and data</span>
+              <a href="{{ '/en/cases/monofasico.html' | relative_url }}"{% if page.url == '/en/cases/monofasico.html' %} aria-current="page"{% endif %}>Tax engine</a>
+              <a href="{{ '/en/cases/icms-st.html' | relative_url }}"{% if page.url == '/en/cases/icms-st.html' %} aria-current="page"{% endif %}>ICMS ST</a>
+              <a href="{{ '/en/cases/inteligencia-importacao.html' | relative_url }}"{% if page.url == '/en/cases/inteligencia-importacao.html' %} aria-current="page"{% endif %}>Import intelligence</a>
+            </div>
+            <div class="grupo"><span>Infrastructure</span>
+              <a href="{{ '/en/cases/infraestrutura.html' | relative_url }}"{% if page.url == '/en/cases/infraestrutura.html' %} aria-current="page"{% endif %}>Disaster recovery</a>
+            </div>
+          </div>
+        </details>
         <a href="{{ '/en/atividade.html' | relative_url }}">Activity</a>
         <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/thiago-garofalo-792a2653/" rel="me">LinkedIn</a>
         <a class="lang" href="{{ pt_url | relative_url }}" hreflang="pt-BR" title="Versão em português">PT</a>
         {% else %}
         <a href="{{ '/#projetos' | relative_url }}">Projetos</a>
-        <a href="{{ '/cases/genesis.html' | relative_url }}">Case Genesis</a>
-        <a href="{{ '/cases/clinalta.html' | relative_url }}">Case Clinalta</a>
-        <a href="{{ '/cases/escrituro.html' | relative_url }}">Case Escrituro</a>
-        <a href="{{ '/cases/icms-st.html' | relative_url }}">Case ICMS ST</a>
-        <a href="{{ '/cases/inteligencia-importacao.html' | relative_url }}">Case Importação</a>
-        <a href="{{ '/cases/central-atendimento.html' | relative_url }}">Case Central</a>
-        <a href="{{ '/cases/robo-acoplin.html' | relative_url }}">Case Robô Acoplin</a>
-        <a href="{{ '/cases/monofasico.html' | relative_url }}">Case Motor tributário</a>
+        <details class="menu">
+          <summary{% if page.url contains '/cases/' %} class="atual"{% endif %}>Cases</summary>
+          <div class="painel">
+            <div class="grupo"><span>Produtos</span>
+              <a href="{{ '/cases/escrituro.html' | relative_url }}"{% if page.url == '/cases/escrituro.html' %} aria-current="page"{% endif %}>Escrituro</a>
+              <a href="{{ '/cases/clinalta.html' | relative_url }}"{% if page.url == '/cases/clinalta.html' %} aria-current="page"{% endif %}>Clinalta</a>
+            </div>
+            <div class="grupo"><span>IA e automação</span>
+              <a href="{{ '/cases/genesis.html' | relative_url }}"{% if page.url == '/cases/genesis.html' %} aria-current="page"{% endif %}>Genesis: agentes de prospecção</a>
+              <a href="{{ '/cases/central-atendimento.html' | relative_url }}"{% if page.url == '/cases/central-atendimento.html' %} aria-current="page"{% endif %}>Central de Atendimento</a>
+              <a href="{{ '/cases/robo-acoplin.html' | relative_url }}"{% if page.url == '/cases/robo-acoplin.html' %} aria-current="page"{% endif %}>Robô de vendas da Acoplin</a>
+            </div>
+            <div class="grupo"><span>Fiscal e dados</span>
+              <a href="{{ '/cases/monofasico.html' | relative_url }}"{% if page.url == '/cases/monofasico.html' %} aria-current="page"{% endif %}>Motor tributário</a>
+              <a href="{{ '/cases/icms-st.html' | relative_url }}"{% if page.url == '/cases/icms-st.html' %} aria-current="page"{% endif %}>ICMS ST</a>
+              <a href="{{ '/cases/inteligencia-importacao.html' | relative_url }}"{% if page.url == '/cases/inteligencia-importacao.html' %} aria-current="page"{% endif %}>Inteligência de importação</a>
+            </div>
+            <div class="grupo"><span>Infraestrutura</span>
+              <a href="{{ '/cases/infraestrutura.html' | relative_url }}"{% if page.url == '/cases/infraestrutura.html' %} aria-current="page"{% endif %}>Recuperação de desastre</a>
+            </div>
+          </div>
+        </details>
         <a href="{{ '/atividade.html' | relative_url }}">Atividade</a>
         <a href="https://github.com/thiagogardev" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/thiago-garofalo-792a2653/" rel="me">LinkedIn</a>
@@ -202,6 +250,14 @@
       };
       document.head.appendChild(s);
     }
+  </script>
+  <script>
+    (function () {
+      var m = document.querySelector('details.menu');
+      if (!m) return;
+      document.addEventListener('click', function (e) { if (m.open && !m.contains(e.target)) m.open = false; });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.open) { m.open = false; m.querySelector('summary').focus(); } });
+    })();
   </script>
 </body>
 </html>
