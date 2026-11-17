@@ -1,5 +1,5 @@
 {
- "atualizado": "2026-11-16T21:53:32.753Z",
+ "atualizado": "2026-11-17T10:15:25.090Z",
  "inicio": "2026-10-17",
  "frentes": [
   "sistemas",
@@ -406,17 +406,27 @@
   },
   {
    "dia": "2026-11-16",
-   "tarefas": 24,
-   "passos": 25,
-   "commits": 18,
-   "deploys": 0,
-   "sessoes": 8,
+   "tarefas": 47,
+   "passos": 46,
+   "commits": 21,
+   "deploys": 2,
+   "sessoes": 9,
    "frentes": {
-    "sistemas": 15,
-    "carreira": 3,
-    "infra": 3,
-    "empresas": 3
+    "sistemas": 27,
+    "infra": 11,
+    "carreira": 5,
+    "empresas": 3,
+    "marketing": 1
    }
+  },
+  {
+   "dia": "2026-11-17",
+   "tarefas": 0,
+   "passos": 1,
+   "commits": 0,
+   "deploys": 0,
+   "sessoes": 1,
+   "frentes": {}
   }
  ]
 }
