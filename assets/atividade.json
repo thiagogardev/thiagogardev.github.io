@@ -1,5 +1,5 @@
 {
- "atualizado": "2026-11-20T15:53:51.370Z",
+ "atualizado": "2026-11-24T16:49:02.411Z",
  "inicio": "2026-10-17",
  "frentes": [
   "sistemas",
@@ -469,16 +469,79 @@
   },
   {
    "dia": "2026-11-20",
+   "tarefas": 182,
+   "passos": 314,
+   "commits": 36,
+   "deploys": 38,
+   "sessoes": 11,
+   "frentes": {
+    "sistemas": 110,
+    "carreira": 5,
+    "infra": 40,
+    "outros": 13,
+    "marketing": 13,
+    "empresas": 1
+   }
+  },
+  {
+   "dia": "2026-11-21",
+   "tarefas": 131,
+   "passos": 198,
+   "commits": 46,
+   "deploys": 22,
+   "sessoes": 11,
+   "frentes": {
+    "carreira": 15,
+    "empresas": 12,
+    "sistemas": 58,
+    "infra": 19,
+    "marketing": 21,
+    "outros": 6
+   }
+  },
+  {
+   "dia": "2026-11-22",
    "tarefas": 47,
-   "passos": 74,
-   "commits": 9,
-   "deploys": 2,
+   "passos": 130,
+   "commits": 18,
+   "deploys": 11,
+   "sessoes": 10,
+   "frentes": {
+    "sistemas": 25,
+    "marketing": 8,
+    "carreira": 3,
+    "empresas": 4,
+    "infra": 7
+   }
+  },
+  {
+   "dia": "2026-11-23",
+   "tarefas": 72,
+   "passos": 101,
+   "commits": 21,
+   "deploys": 16,
    "sessoes": 8,
    "frentes": {
-    "sistemas": 28,
-    "carreira": 2,
-    "infra": 15,
-    "marketing": 2
+    "carreira": 21,
+    "sistemas": 31,
+    "empresas": 5,
+    "marketing": 3,
+    "infra": 12
+   }
+  },
+  {
+   "dia": "2026-11-24",
+   "tarefas": 34,
+   "passos": 44,
+   "commits": 12,
+   "deploys": 7,
+   "sessoes": 7,
+   "frentes": {
+    "carreira": 4,
+    "sistemas": 21,
+    "infra": 3,
+    "marketing": 5,
+    "empresas": 1
    }
   }
  ]
